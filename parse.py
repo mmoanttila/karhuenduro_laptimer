@@ -73,24 +73,25 @@ with open('log.txt',mode = 'r') as contents:
             # We might have several tagreads per line
             # That's why we loop
             for read in parsed['tag_reads']:
+                epc = unicodedata.normalize('NFKD', read['epc']).encode('ascii','ignore')
                 if (read['antennaPort'] in startports ):
                     if (debug):
-                        print ("Lahto: ", read['epc'], " ", time_to_localtime(read['firstSeenTimestamp']) )
+                        print ("Lahto: ", epc, " ", time_to_localtime(read['firstSeenTimestamp']) )
                         # print ("Lahto: ", read['epc'], " ", newtime_to_ctime(read['firstSeenTimestamp']) )
-                    starttimes[read['epc']].append(read['firstSeenTimestamp'])
+                    starttimes[epc].append(read['firstSeenTimestamp'])
                 elif (read['antennaPort'] in endports ):
                     if (debug):
-                        print ("Maali: ", read['epc'], " ", time_to_localtime(read['firstSeenTimestamp']) )
+                        print ("Maali: ", epc, " ", time_to_localtime(read['firstSeenTimestamp']) )
                         # print ("Maali: ", read['epc'], " ", newtime_to_ctime(read['firstSeenTimestamp']) )
-                    endtimes[read['epc']].append(read['firstSeenTimestamp'])
+                    endtimes[epc].append(read['firstSeenTimestamp'])
                     # Find last start-timestamp for current epc to calculate laptime
                     #pprint (read['firstSeenTimestamp'])
                     #pprint (starttimes[read['epc']][-1])
                     # Assuming last starttime is for current leg
                     if (debug):
-                        print ("Laptime for ", read['epc'], " : ", (read['firstSeenTimestamp'] - starttimes[read['epc']][-1])/1000000, " secs") 
-                    laptimes[read['epc']].append(read['firstSeenTimestamp']-starttimes[read['epc']][-1])
-                    if (len (laptimes[read['epc']])) > maxlaps:
+                        print ("Laptime for ", epc, " : ", (read['firstSeenTimestamp'] - starttimes[epc][-1])/1000000, " secs") 
+                    laptimes[epc].append(read['firstSeenTimestamp']-starttimes[epc][-1])
+                    if (len (laptimes[epc])) > maxlaps:
                         maxlaps += 1
                 #timestamps[read['epc']].append(read['firstSeenTimestamp'])
                 #data.append(read)
@@ -101,6 +102,22 @@ with open('log.txt',mode = 'r') as contents:
         print ("Tarkoittanee, etta se sisaltaa jotain odottamatonta moskaa!")
 
 print ("Ajettu ", maxlaps, " kierrosta.")
+if (cgi):
+    print "</pre>"
+    print "<table>"
+    for line in laptimes:
+        print "  <tr>"
+        print "    <td>", line['epc'], "</td>"
+        for col in range(0, maxlaps):
+            print "    <td>", line['epc'][col], "</td>"
+        print "  </tr>"
+    print "</table>"
+    print "<pre>"
+else:
+    print "Laptimes per epc"
+    for epc, times in laptimes.iteritems():
+        print (epc, ": ", pprint (times) )
+
 pprint(laptimes)
 
 if (cgi):
