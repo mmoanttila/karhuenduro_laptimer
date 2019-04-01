@@ -26,12 +26,14 @@ else:
 
 # If called as CGI, we'll use html output
 if "HTTP_USER_AGENT" in os.environ:
+    cgi = True
     print "Content-type:text/html\r\n\r\n"
     print '<html>'
     print '<head>'
     print '<title>Kierrosajat</title>'
     print '<body><pre>'
-
+else:
+    cgi = False
 #try:
 #	url = "http://karhu.serveftp.net:5000/Ajanotto/log.txt"
 #	contents = urllib.urlopen( url )
@@ -101,7 +103,7 @@ with open('log.txt',mode = 'r') as contents:
 print ("Ajettu ", maxlaps, " kierrosta.")
 pprint(laptimes)
 
-if "HTTP_USER_AGENT" in os.environ:
+if (cgi):
     print '</pre>'
     print '</html>'
 #print (type(parsed['tag_reads']))
