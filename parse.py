@@ -5,8 +5,9 @@ from pprint import pprint
 import urllib
 #from urllib import request
 import unicodedata
-import os
 from collections import defaultdict
+import os
+import sys
 
 startports = [1, 3]
 endports = [0, 2, 4]
@@ -16,6 +17,12 @@ starttimes = defaultdict(list)
 endtimes = defaultdict(list)
 laptimes = defaultdict(list)
 
+# check for debug cmd parameter
+if ( len(sys.argv) > 1 and '-d' in sys.argv ):
+    print "Debugging Enabled!"
+    debug = True
+else:
+    debug = False
 
 # If called as CGI, we'll use html output
 if "HTTP_USER_AGENT" in os.environ:
@@ -65,16 +72,21 @@ with open('log.txt',mode = 'r') as contents:
             # That's why we loop
             for read in parsed['tag_reads']:
                 if (read['antennaPort'] in startports ):
-                    # print ("Lahto: ", read['epc'], " ", newtime_to_ctime(read['firstSeenTimestamp']) )
+                    if (debug):
+                        print ("Lahto: ", read['epc'], " ", time_to_localtime(read['firstSeenTimestamp']) )
+                        # print ("Lahto: ", read['epc'], " ", newtime_to_ctime(read['firstSeenTimestamp']) )
                     starttimes[read['epc']].append(read['firstSeenTimestamp'])
                 elif (read['antennaPort'] in endports ):
-                    # print ("Maali: ", read['epc'], " ", newtime_to_ctime(read['firstSeenTimestamp']) )
+                    if (debug):
+                        print ("Maali: ", read['epc'], " ", time_to_localtime(read['firstSeenTimestamp']) )
+                        # print ("Maali: ", read['epc'], " ", newtime_to_ctime(read['firstSeenTimestamp']) )
                     endtimes[read['epc']].append(read['firstSeenTimestamp'])
                     # Find last start-timestamp for current epc to calculate laptime
                     #pprint (read['firstSeenTimestamp'])
                     #pprint (starttimes[read['epc']][-1])
                     # Assuming last starttime is for current leg
-                    print ("Laptime for ", read['epc'], " : ", (read['firstSeenTimestamp'] - starttimes[read['epc']][-1])/1000000, " secs") 
+                    if (debug):
+                        print ("Laptime for ", read['epc'], " : ", (read['firstSeenTimestamp'] - starttimes[read['epc']][-1])/1000000, " secs") 
                     laptimes[read['epc']].append(read['firstSeenTimestamp']-starttimes[read['epc']][-1])
                     if (len (laptimes[read['epc']])) > maxlaps:
                         maxlaps += 1
