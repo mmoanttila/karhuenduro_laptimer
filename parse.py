@@ -116,9 +116,11 @@ if (cgi):
 else:
     print "Laptimes per epc"
     for epc, times in laptimes.iteritems():
-        print (epc, ": ", pprint (times) )
+        print epc, ": "
+        for col in range(0,len(times)):
+            print "    ", times[col]/1000000, "secs"
 
-pprint(laptimes)
+#pprint(laptimes)
 
 if (cgi):
     print '</pre>'
