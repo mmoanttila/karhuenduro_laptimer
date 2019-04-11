@@ -54,18 +54,19 @@ def newtime_to_ctime (utime):
     return (time.mktime(time.strptime(strtime,"%Y-%m-%dT%H:%M:%S.%fZ")))
     # 2019-03-24T20:19:03.872083Z
 
-with open('log.txt',mode = 'r') as contents:
+#with open('log.txt',mode = 'r') as contents:
+with open('20190403.txt',mode = 'r') as contents:
 
   try:
 
     for line in contents:
         # First let's skip logfile timestamp
-        jsonline=line.split(",",3)
+        jsonline=line.split(",",2)
         # Let's read json content to list of dicts
         try:
-            parsed=json.loads(jsonline[3])
+            parsed=json.loads(jsonline[2])
         except ValueError:
-            print ("Rivilta: ", jsonline[3])
+            print ("Rivilta: ", jsonline[2])
             print ("ei onnistuttu parsimaan json:ia.")
 
         # Skip heartbeats
@@ -77,7 +78,7 @@ with open('log.txt',mode = 'r') as contents:
                 if (read['antennaPort'] in startports ):
                     if (debug):
                         print ("Lahto: ", epc, " ", time_to_localtime(read['firstSeenTimestamp']) )
-                        # print ("Lahto: ", read['epc'], " ", newtime_to_ctime(read['firstSeenTimestamp']) )
+                        #print ("Lahto: ", read['epc'], " ", newtime_to_ctime(read['firstSeenTimestamp']) )
                     starttimes[epc].append(read['firstSeenTimestamp'])
                 elif (read['antennaPort'] in endports ):
                     if (debug):
