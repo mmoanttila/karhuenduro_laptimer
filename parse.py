@@ -55,7 +55,7 @@ def newtime_to_ctime (utime):
     # 2019-03-24T20:19:03.872083Z
 
 #with open('log.txt',mode = 'r') as contents:
-with open('20190403.txt',mode = 'r') as contents:
+with open('20190528.txt',mode = 'r') as contents:
 
   try:
 
@@ -79,6 +79,10 @@ with open('20190403.txt',mode = 'r') as contents:
                     if (debug):
                         print ("Lahto: ", epc, " ", time_to_localtime(read['firstSeenTimestamp']) )
                         #print ("Lahto: ", read['epc'], " ", newtime_to_ctime(read['firstSeenTimestamp']) )
+                        if ( len(starttimes[epc]) > 0 ):
+					        print ("Laptime for ", epc, " : ", (read['firstSeenTimestamp'] - starttimes[epc][-1])/1000000, " secs") 
+                    if ( len(starttimes[epc]) > 0 ):
+                        laptimes[epc].append(read['firstSeenTimestamp']-starttimes[epc][-1])
                     starttimes[epc].append(read['firstSeenTimestamp'])
                 elif (read['antennaPort'] in endports ):
                     if (debug):
