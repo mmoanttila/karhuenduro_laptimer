@@ -53,7 +53,7 @@ data = []
 maxlaps = 0
 
 def print_laptime (usec):
-    return str( timedelta( seconds=usec/1000000 ) )
+    return str( timedelta( milliseconds=usec//1000 ) )
 
 def read_tags (tagfile):
     my_tags ={}
@@ -138,7 +138,6 @@ if (cgi):
     print "<table border=\"1\">"
     for epc, times in laptimes.iteritems():
         print "  <tr>"
-        #print "    <td colspan=\"", len (times), "\">", print_tag( epc ), "</td>"
         print "    <td colspan=\"", maxlaps, "\">", print_tag( epc ), "</td>"
         print "    <td>Total</td>"
         print "  </tr>"
@@ -147,10 +146,10 @@ if (cgi):
         for col in range(0,len(times)):
             total = total + times[col]
             if ( (col == len(times)-1 ) ):
-                print "    <td class=\"laptime\" colspan=\"", maxlaps-col, "\">", print_laptime( times[col] ), "</td>"
+                print "    <td class=\"laptime\" colspan=\"", maxlaps-col, "\">", print_laptime( times[col] )[:-3], "</td>"
             else: 
-                print "    <td class=\"laptime\">", print_laptime( times[col] ), "</td>"
-        print "    <td>", print_laptime( total ), "</td>"
+                print "    <td class=\"laptime\">", print_laptime( times[col] )[:-3], "</td>"
+        print "    <td>", print_laptime( total )[:-3], "</td>"
         print "  </tr>"
     print "</table>"
     print "<pre>"
@@ -161,8 +160,8 @@ else:
         total = 0.0
         for col in range(0,len(times)):
             total = total + times[col]
-            print "    ", print_laptime( times[col] ), "secs"
-        print "Total:", print_laptime( total ) 
+            print "    ", print_laptime( times[col] )[:-3], "secs"
+        print "Total:", print_laptime( total )[:-3] 
 
 #pprint(laptimes)
 
