@@ -6,15 +6,13 @@ import urllib
 #from urllib import request
 import unicodedata
 from collections import defaultdict
+from datetime import timedelta
+import csv
 import os
 import sys
 
 startports = [1, 3]
 endports = [2, 4]
-tags = {'BAD00062': 'Aku', 
-    'BAD00390': 'Ylijoki',
-    '0002E18E0000000000000004': 'Airaksinen'}
-
 
 # dict contains lists of timestamps indexed by epc
 starttimes = defaultdict(list)
@@ -49,8 +47,15 @@ data = []
 maxlaps = 0
 
 def print_laptime (usec):
-    from datetime import timedelta
     return str( timedelta( seconds=usec/1000000 ) )
+
+def read_tags (tagfile):
+    my_tags ={}
+    with open( tagfile ) as csvfile:
+        csvreader = csv.reader( csvfile, delimiter=',' )
+        for row in csvreader:
+            my_tags[row[0]] = row[1]
+    return my_tags
 
 def print_tag (tag):
     if tags.has_key (tag):
@@ -68,7 +73,8 @@ def newtime_to_ctime (utime):
     return (time.mktime(time.strptime(strtime,"%Y-%m-%dT%H:%M:%S.%fZ")))
     # 2019-03-24T20:19:03.872083Z
 
-#with open('log.txt',mode = 'r') as contents:
+tags = read_tags( 'tags.csv')
+
 with open('20190530.txt',mode = 'r') as contents:
 
   try:
