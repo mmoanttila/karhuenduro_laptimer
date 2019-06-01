@@ -10,7 +10,11 @@ import os
 import sys
 
 startports = [1, 3]
-endports = [0, 2, 4]
+endports = [2, 4]
+tags = {'BAD00062': 'Aku', 
+    'BAD00390': 'Ylijoki',
+    '0002E18E0000000000000004': 'Airaksinen'}
+
 
 # dict contains lists of timestamps indexed by epc
 starttimes = defaultdict(list)
@@ -44,6 +48,16 @@ else:
 data = []
 maxlaps = 0
 
+def print_laptime (usec):
+    from datetime import timedelta
+    return str( timedelta( seconds=usec/1000000 ) )
+
+def print_tag (tag):
+    if tags.has_key (tag):
+        return tags[tag]
+    else:
+        return tag
+
 def time_to_localtime (utime):
     return (time.strftime( '%H:%M:%S', time.localtime(utime/1000000)))
 
@@ -55,7 +69,7 @@ def newtime_to_ctime (utime):
     # 2019-03-24T20:19:03.872083Z
 
 #with open('log.txt',mode = 'r') as contents:
-with open('20190528.txt',mode = 'r') as contents:
+with open('20190530.txt',mode = 'r') as contents:
 
   try:
 
@@ -81,8 +95,8 @@ with open('20190528.txt',mode = 'r') as contents:
                         #print ("Lahto: ", read['epc'], " ", newtime_to_ctime(read['firstSeenTimestamp']) )
                         if ( len(starttimes[epc]) > 0 ):
 					        print ("Laptime for ", epc, " : ", (read['firstSeenTimestamp'] - starttimes[epc][-1])/1000000, " secs") 
-                    if ( len(starttimes[epc]) > 0 ):
-                        laptimes[epc].append(read['firstSeenTimestamp']-starttimes[epc][-1])
+                    #if ( len(starttimes[epc]) > 0 ):
+                    #    laptimes[epc].append(read['firstSeenTimestamp']-starttimes[epc][-1])
                     starttimes[epc].append(read['firstSeenTimestamp'])
                 elif (read['antennaPort'] in endports ):
                     if (debug):
@@ -121,9 +135,10 @@ if (cgi):
 else:
     print "Laptimes per epc"
     for epc, times in laptimes.iteritems():
-        print epc, ": "
+        print print_tag(epc), ": "
         for col in range(0,len(times)):
-            print "    ", times[col]/1000000, "secs"
+            print "    ", print_laptime( times[col] ), "secs"
+            # print "    ", times[col]/1000000, "secs"
 
 #pprint(laptimes)
 
