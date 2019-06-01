@@ -33,6 +33,7 @@ if "HTTP_USER_AGENT" in os.environ:
     print '<html>'
     print '<head>'
     print '<title>Kierrosajat</title>'
+    print '</head>'
     print '<body><pre>'
 else:
     cgi = False
@@ -126,25 +127,37 @@ with open('20190530.txt',mode = 'r') as contents:
         print ("Lokin analysoinnissa tuli tyyppivirhe!")
         print ("Tarkoittanee, etta se sisaltaa jotain odottamatonta moskaa!")
 
-print ("Ajettu ", maxlaps, " kierrosta.")
+print "Ajettu", maxlaps, "kierrosta."
 if (cgi):
     print "</pre>"
-    print "<table>"
-    for line in laptimes:
+    for epc, times in laptimes.iteritems():
+        print "<table border=\"1\">"
+        print "<thead>"
         print "  <tr>"
-        print "    <td>", line['epc'], "</td>"
-        for col in range(0, maxlaps):
-            print "    <td>", line['epc'][col], "</td>"
+        print "    <td colspan=\"", len (times), "\">", print_tag( epc ), "</td>"
+        print "    <td>Total</td>"
         print "  </tr>"
+        print "</thead>"
+        print "<tbody>"
+        print "  <tr>"
+        total = 0.0
+        for col in range(0,len(times)):
+            total = total + times[col]
+            print "    <td>", print_laptime( times[col] ), "</td>"
+        print "    <td>", print_laptime( total ), "</td>"
+        print "  </tr>"
+    print "</tbody>"
     print "</table>"
     print "<pre>"
 else:
     print "Laptimes per epc"
     for epc, times in laptimes.iteritems():
         print print_tag(epc), ": "
+        total = 0.0
         for col in range(0,len(times)):
+            total = total + times[col]
             print "    ", print_laptime( times[col] ), "secs"
-            # print "    ", times[col]/1000000, "secs"
+        print "Total:", print_laptime( total ) 
 
 #pprint(laptimes)
 
