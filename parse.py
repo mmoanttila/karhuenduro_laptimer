@@ -34,6 +34,11 @@ if "HTTP_USER_AGENT" in os.environ:
     print '<head>'
     print '<title>Kierrosajat</title>'
     print '</head>'
+    print '<style>'
+    print '  table {border-collapse: collapse;}'
+    print '  tr:nth-child(odd) {background-color: #f2f2f2;}'
+    print '  td.laptime { padding: 5px; }'
+    print '</style>'
     print '<body><pre>'
 else:
     cgi = False
@@ -130,23 +135,23 @@ with open('20190530.txt',mode = 'r') as contents:
 print "Ajettu", maxlaps, "kierrosta."
 if (cgi):
     print "</pre>"
+    print "<table border=\"1\">"
     for epc, times in laptimes.iteritems():
-        print "<table border=\"1\">"
-        print "<thead>"
         print "  <tr>"
-        print "    <td colspan=\"", len (times), "\">", print_tag( epc ), "</td>"
+        #print "    <td colspan=\"", len (times), "\">", print_tag( epc ), "</td>"
+        print "    <td colspan=\"", maxlaps, "\">", print_tag( epc ), "</td>"
         print "    <td>Total</td>"
         print "  </tr>"
-        print "</thead>"
-        print "<tbody>"
         print "  <tr>"
         total = 0.0
         for col in range(0,len(times)):
             total = total + times[col]
-            print "    <td>", print_laptime( times[col] ), "</td>"
+            if ( (col == len(times)-1 ) ):
+                print "    <td class=\"laptime\" colspan=\"", maxlaps-col, "\">", print_laptime( times[col] ), "</td>"
+            else: 
+                print "    <td class=\"laptime\">", print_laptime( times[col] ), "</td>"
         print "    <td>", print_laptime( total ), "</td>"
         print "  </tr>"
-    print "</tbody>"
     print "</table>"
     print "<pre>"
 else:
