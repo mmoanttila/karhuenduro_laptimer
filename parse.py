@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#! /usr/bin/env python
 import json
 import time
 from pprint import pprint
@@ -50,15 +50,17 @@ if "HTTP_USER_AGENT" in os.environ:
     # Let's use current date if not given on url
     #date = form.getvalue('date', datetime.now().strftime('%Y%m%d'))
     date = form.getvalue('date', '20190602')
-    start = form.getvalue('start')
-    end = form.getvalue('end')
+    race_start = int( time.mktime( time.strptime( date + " " + form.getvalue('start','10:00'), "%Y%m%d %H:%M")) ) * 1000000
+    race_end = int( time.mktime( time.strptime( date + " " + form.getvalue('end','23:59'), "%Y%m%d %H:%M")) ) * 1000000
 else:
     cgi = False
     from cgi import parse_qs
-    date = os.environ.get('date', '')
-    start =os.environ.get('start', '') 
-    end = os.environ.get('end', '') 
-#    contents = open('20190530.txt',mode = 'r')
+    date = os.getenv('date', '20190602')
+    race_start = int( time.mktime( time.strptime( date + " " + os.getenv('start','10:00'), "%Y%m%d %H:%M")) ) * 1000000
+    if (debug): 
+        print ("Converting :" + date + " " + os.getenv('start','10:00') + " as %Y%m%d %H:%M")
+        print ("Race start time: " + str(race_start))
+    race_end = int( time.mktime( time.strptime( date + " " + os.getenv('end','23:59'), "%Y%m%d %H:%M")) ) * 1000000
 
 try:
     if (debug):
@@ -128,13 +130,19 @@ for line in contents:
         # That's why we loop
         for read in parsed['tag_reads']:
             epc = unicodedata.normalize('NFKD', read['epc']).encode('ascii','ignore')
-            if (read['antennaPort'] in startports ):
+            if (read['antennaPort'] in startports and read['firstSeenTimestamp'] > race_start and read['firstSeenTimestamp'] < race_end):
                 if (debug):
                     print ("Lahto: ", epc, " ", time_to_localtime(read['firstSeenTimestamp']) )
                     #print ("Lahto: ", read['epc'], " ", newtime_to_ctime(read['firstSeenTimestamp']) )
-                    if ( len(starttimes[epc]) > 0 ):
-                        print ("Laptime for ", epc, " : ", (read['firstSeenTimestamp'] - starttimes[epc][-1])/1000000, " secs") 
                 starttimes[epc].append(read['firstSeenTimestamp'])
+                # We try to figure if we have end-tags at all
+                if ( len(starttimes[epc]) > 1 and len(endtimes[epc]) == 0):
+                    if (debug):
+                        print ("Laptime for ", epc, " : ", (read['firstSeenTimestamp'] - starttimes[epc][-2])/1000000, " secs") 
+                    laptimes[epc].append(read['firstSeenTimestamp'] - starttimes[epc][-2]) 
+                    if (len (laptimes[epc])) > maxlaps:
+                        maxlaps += 1
+
             elif (read['antennaPort'] in endports ):
                 if (debug):
                     print ("Maali: ", epc, " ", time_to_localtime(read['firstSeenTimestamp']) )
