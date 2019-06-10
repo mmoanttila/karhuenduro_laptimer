@@ -6,7 +6,7 @@ import urllib
 #from urllib import request
 import unicodedata
 from collections import defaultdict
-from datetime import timedelta
+from datetime import timedelta, datetime
 import csv
 import os
 import sys
@@ -40,14 +40,25 @@ if "HTTP_USER_AGENT" in os.environ:
     print '  td.laptime { padding: 5px; }'
     print '</style>'
     print '<body><pre>'
+    import cgi, cgitb
+    # Enable CGI-debugging output to html
+    cgitb.enable()
+    # Lets prepare to read GET-variables
+    form = cgi.FieldStorage()
+    # Let's use current date if not given on url
+    date = form.getvalue('date', datetime.now().strftime('%Y%m%d'))
+    start = form.getvalue('start')
+    end = form.getvalue('end')
+    try:
+        url = "http://karhu.serveftp.net:5000/Ajanotto/" + date + ".txt"
+        contents = urllib.urlopen( url )
+    except IOError:
+        print ("URLia ", url, " ei onnistuttu resolvoimaan!")
+        print ("Tai sitten osoite ei vaan vastaa!")
+
 else:
     cgi = False
-#try:
-#	url = "http://karhu.serveftp.net:5000/Ajanotto/log.txt"
-#	contents = urllib.urlopen( url )
-#except IOError:
-#    print ("URLia ", url, " ei onnistuttu resolvoimaan!")
-#    print ("Tai sitten osoite ei vaan vastaa!")
+    contents = open('20190530.txt',mode = 'r')
 
 data = []
 maxlaps = 0
@@ -86,56 +97,54 @@ def newtime_to_ctime (utime):
 
 tags = read_tags( 'tags.csv')
 
-with open('20190530.txt',mode = 'r') as contents:
+#with open('20190530.txt',mode = 'r') as contents:
 
-  try:
+#  try:
 
-    for line in contents:
-        # First let's skip logfile timestamp
-        jsonline=line.split(",",2)
-        # Let's read json content to list of dicts
-        try:
-            parsed=json.loads(jsonline[2])
-        except ValueError:
-            print ("Rivilta: ", jsonline[2])
-            print ("ei onnistuttu parsimaan json:ia.")
+for line in contents:
+    # First let's skip logfile timestamp
+    jsonline=line.split(",",2)
+    # Let's read json content to list of dicts
+    try:
+        parsed=json.loads(jsonline[2])
+    except ValueError:
+        print ("Rivilta: ", jsonline[2])
+        print ("ei onnistuttu parsimaan json:ia.")
 
-        # Skip heartbeats
-        if ( not parsed['tag_reads'][0]['isHeartBeat'] ):
-            # We might have several tagreads per line
-            # That's why we loop
-            for read in parsed['tag_reads']:
-                epc = unicodedata.normalize('NFKD', read['epc']).encode('ascii','ignore')
-                if (read['antennaPort'] in startports ):
-                    if (debug):
-                        print ("Lahto: ", epc, " ", time_to_localtime(read['firstSeenTimestamp']) )
-                        #print ("Lahto: ", read['epc'], " ", newtime_to_ctime(read['firstSeenTimestamp']) )
-                        if ( len(starttimes[epc]) > 0 ):
-					        print ("Laptime for ", epc, " : ", (read['firstSeenTimestamp'] - starttimes[epc][-1])/1000000, " secs") 
-                    #if ( len(starttimes[epc]) > 0 ):
-                    #    laptimes[epc].append(read['firstSeenTimestamp']-starttimes[epc][-1])
-                    starttimes[epc].append(read['firstSeenTimestamp'])
-                elif (read['antennaPort'] in endports ):
-                    if (debug):
-                        print ("Maali: ", epc, " ", time_to_localtime(read['firstSeenTimestamp']) )
-                        # print ("Maali: ", read['epc'], " ", newtime_to_ctime(read['firstSeenTimestamp']) )
-                    endtimes[epc].append(read['firstSeenTimestamp'])
-                    # Find last start-timestamp for current epc to calculate laptime
-                    #pprint (read['firstSeenTimestamp'])
-                    #pprint (starttimes[read['epc']][-1])
-                    # Assuming last starttime is for current leg
-                    if (debug):
+    # Skip heartbeats
+    if ( not parsed['tag_reads'][0]['isHeartBeat'] ):
+        # We might have several tagreads per line
+        # That's why we loop
+        for read in parsed['tag_reads']:
+            epc = unicodedata.normalize('NFKD', read['epc']).encode('ascii','ignore')
+            if (read['antennaPort'] in startports ):
+                if (debug):
+                    print ("Lahto: ", epc, " ", time_to_localtime(read['firstSeenTimestamp']) )
+                    #print ("Lahto: ", read['epc'], " ", newtime_to_ctime(read['firstSeenTimestamp']) )
+                    if ( len(starttimes[epc]) > 0 ):
                         print ("Laptime for ", epc, " : ", (read['firstSeenTimestamp'] - starttimes[epc][-1])/1000000, " secs") 
-                    laptimes[epc].append(read['firstSeenTimestamp']-starttimes[epc][-1])
-                    if (len (laptimes[epc])) > maxlaps:
-                        maxlaps += 1
-                #timestamps[read['epc']].append(read['firstSeenTimestamp'])
-                #data.append(read)
-                #pprint (read)
-                #pprint (type (read))
-  except TypeError:
-        print ("Lokin analysoinnissa tuli tyyppivirhe!")
-        print ("Tarkoittanee, etta se sisaltaa jotain odottamatonta moskaa!")
+                starttimes[epc].append(read['firstSeenTimestamp'])
+            elif (read['antennaPort'] in endports ):
+                if (debug):
+                    print ("Maali: ", epc, " ", time_to_localtime(read['firstSeenTimestamp']) )
+                    # print ("Maali: ", read['epc'], " ", newtime_to_ctime(read['firstSeenTimestamp']) )
+                endtimes[epc].append(read['firstSeenTimestamp'])
+                # Find last start-timestamp for current epc to calculate laptime
+                #pprint (read['firstSeenTimestamp'])
+                #pprint (starttimes[read['epc']][-1])
+                # Assuming last starttime is for current leg
+                if (debug):
+                    print ("Laptime for ", epc, " : ", (read['firstSeenTimestamp'] - starttimes[epc][-1])/1000000, " secs") 
+                laptimes[epc].append(read['firstSeenTimestamp']-starttimes[epc][-1])
+                if (len (laptimes[epc])) > maxlaps:
+                    maxlaps += 1
+            #timestamps[read['epc']].append(read['firstSeenTimestamp'])
+            #data.append(read)
+            #pprint (read)
+            #pprint (type (read))
+#except TypeError:
+#    print ("Lokin analysoinnissa tuli tyyppivirhe!")
+#    print ("Tarkoittanee, etta se sisaltaa jotain odottamatonta moskaa!")
 
 print "Ajettu", maxlaps, "kierrosta."
 if (cgi):
