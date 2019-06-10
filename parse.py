@@ -43,22 +43,33 @@ if "HTTP_USER_AGENT" in os.environ:
     import cgi, cgitb
     # Enable CGI-debugging output to html
     cgitb.enable()
+    cgitb.enable(display=0, logdir="/worktmp/mmoa/karhu/logs/")
+
     # Lets prepare to read GET-variables
     form = cgi.FieldStorage()
     # Let's use current date if not given on url
-    date = form.getvalue('date', datetime.now().strftime('%Y%m%d'))
+    #date = form.getvalue('date', datetime.now().strftime('%Y%m%d'))
+    date = form.getvalue('date', '20190602')
     start = form.getvalue('start')
     end = form.getvalue('end')
-    try:
-        url = "http://karhu.serveftp.net:5000/Ajanotto/" + date + ".txt"
-        contents = urllib.urlopen( url )
-    except IOError:
-        print ("URLia ", url, " ei onnistuttu resolvoimaan!")
-        print ("Tai sitten osoite ei vaan vastaa!")
-
 else:
     cgi = False
-    contents = open('20190530.txt',mode = 'r')
+    from cgi import parse_qs
+    date = os.environ.get('date', '')
+    start =os.environ.get('start', '') 
+    end = os.environ.get('end', '') 
+#    contents = open('20190530.txt',mode = 'r')
+
+try:
+    if (debug):
+        print ("Generating url = http://karhu.serveftp.net:5000/Ajanotto/" + date + ".txt")
+    url = "http://karhu.serveftp.net:5000/Ajanotto/" + date + ".txt"
+    contents = urllib.urlopen( url )
+except IOError:
+    print ("URLia ", url, " ei onnistuttu resolvoimaan!")
+    print ("Tai sitten osoite ei vaan vastaa!")
+
+
 
 data = []
 maxlaps = 0
