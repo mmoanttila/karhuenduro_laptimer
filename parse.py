@@ -28,8 +28,9 @@ else:
 
 # If called as CGI, we'll use html output
 if "HTTP_USER_AGENT" in os.environ:
-    cgi = True
-    print "Content-type:text/html\r\n\r\n"
+    use_cgi = True
+    print "Content-type: text/html"
+    print
     print '<html>'
     print '<head>'
     print '<title>Kierrosajat</title>'
@@ -53,7 +54,7 @@ if "HTTP_USER_AGENT" in os.environ:
     race_start = int( time.mktime( time.strptime( date + " " + form.getvalue('start','10:00'), "%Y%m%d %H:%M")) ) * 1000000
     race_end = int( time.mktime( time.strptime( date + " " + form.getvalue('end','23:59'), "%Y%m%d %H:%M")) ) * 1000000
 else:
-    cgi = False
+    use_cgi = False
     from cgi import parse_qs
     date = os.getenv('date', '20190602')
     race_start = int( time.mktime( time.strptime( date + " " + os.getenv('start','10:00'), "%Y%m%d %H:%M")) ) * 1000000
@@ -166,7 +167,7 @@ for line in contents:
 #    print ("Tarkoittanee, etta se sisaltaa jotain odottamatonta moskaa!")
 
 print "Ajettu", maxlaps, "kierrosta."
-if (cgi):
+if (use_cgi):
     print "</pre>"
     print "<table border=\"1\">"
     for epc, times in laptimes.iteritems():
@@ -198,7 +199,7 @@ else:
 
 #pprint(laptimes)
 
-if (cgi):
+if (use_cgi):
     print '</pre>'
     print '</html>'
 #print (type(parsed['tag_reads']))
