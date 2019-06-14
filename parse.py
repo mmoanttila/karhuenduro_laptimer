@@ -44,7 +44,6 @@ if "HTTP_USER_AGENT" in os.environ:
     import cgi, cgitb
     # Enable CGI-debugging output to html
     cgitb.enable()
-    cgitb.enable(display=0, logdir="/worktmp/mmoa/karhu/logs/")
 
     # Lets prepare to read GET-variables
     form = cgi.FieldStorage()
@@ -86,11 +85,22 @@ def print_laptime (usec):
     return str( timedelta( milliseconds=usec//1000 ) )
 
 def read_tags (tagfile):
+    my_url = "https://docs.google.com/spreadsheets/d/1dtqQQ6azJ5J0VBEHnnKLAkp3SlUK_6OzSk2RQivY6L0/export?format=csv&id=1dtqQQ6azJ5J0VBEHnnKLAkp3SlUK_6OzSk2RQivY6L0&gid=0"
+    try:
+        if (debug):
+            print ("Trying to read .csv from " + my_url )
+        csvfile = urllib.urlopen( my_url )
+    except IOError:
+        print ("URLia ", my_url, " ei onnistuttu resolvoimaan!")
+        print ("Tai sitten osoite ei vaan vastaa!")
+
     my_tags ={}
-    with open( tagfile ) as csvfile:
-        csvreader = csv.reader( csvfile, delimiter=',' )
-        for row in csvreader:
-            my_tags[row[0]] = row[1]
+    # with open( tagfile ) as csvfile:
+    csvreader = csv.reader( csvfile, delimiter=',' )
+    for row in csvreader:
+        if (debug):
+            print "Luin tagin: " + row[2] + " = " + row[1]
+        my_tags[row[2]] = row[1]
     return my_tags
 
 def print_tag (tag):
