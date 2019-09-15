@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Karhuenduro laptimer</title>
+</head>
+
+<body>
+<H2>Laptimer</H2>
+<P>
+<form action="http://www.mmoa.net/tulokset.py">Lokin PVM:<br>
+    <input type="date" min="2019-01-01" name="date"><br>
+Kisan/erän alkuaika:<br>
+    <input type="time" name="start"><br>
+Kisan/erän loppuaika:<br>
+    <input type="time" name="end"><br>
+Laskennan tyyppi:<br>
+    <select name="mode">
+        <option value="laptime">Kierrosaika</option>
+        <option value="stage">Pätkäaika</option>
+    </select><br>
+    Debug:
+    <input type="checkbox" name="debug" value="True"><br>
+    <input type="submit" value="Laske">
+</form>
+</P>
+</body>
+</html> 
