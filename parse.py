@@ -57,6 +57,10 @@ if "HTTP_USER_AGENT" in os.environ:
     # Let's use current date if not given on url
     #date = form.getvalue('date', datetime.now().strftime('%Y%m%d'))
     date = form.getvalue('date', '20190602')
+    mydebug = form.getvalue('debug', 'False')
+    if ( mydebug == 'True' or mydebug == 'true' or mydebug == 1 ):
+        debug = True
+
     if (debug):
         print ("Kaytetty date: " + date)
     race_start = int( time.mktime( time.strptime( date + " " + form.getvalue('start','10:00'), "%Y%m%d %H:%M")) ) * 1000000
