@@ -76,6 +76,8 @@ try:
         print ("Generating url = " + log_url + date + ".txt")
     url = log_url + date + ".txt"
     contents = urllib2.urlopen( url )
+    if (debug):
+        print ("Logfile last modified :" + contents.headers['last-modified'] )
 except IOError:
     print ("URLia ", url, " ei onnistuttu resolvoimaan!")
     print ("Tai sitten osoite ei vaan vastaa!")
@@ -99,6 +101,9 @@ def read_tags (tagfile):
         if (debug):
             print ("Trying to read .csv from " + csv_url )
         csvfile = urllib2.urlopen( csv_url )
+        if (debug):
+            print ("CSV last modified :" + csvfile.headers['last-modified'] )
+
     except IOError:
         print ("URLia ", csv_url, " ei onnistuttu resolvoimaan!")
         print ("Tai sitten osoite ei vaan vastaa!")
