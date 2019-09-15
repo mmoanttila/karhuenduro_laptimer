@@ -45,11 +45,15 @@ if "HTTP_USER_AGENT" in os.environ:
     # Enable CGI-debugging output to html
     cgitb.enable()
 
+    if (debug):
+        print ("CGI-tulostus kaytossa")
     # Lets prepare to read GET-variables
     form = cgi.FieldStorage()
     # Let's use current date if not given on url
     #date = form.getvalue('date', datetime.now().strftime('%Y%m%d'))
     date = form.getvalue('date', '20190602')
+    if (debug):
+        print ("Kaytetty date:", date)
     race_start = int( time.mktime( time.strptime( date + " " + form.getvalue('start','10:00'), "%Y%m%d %H:%M")) ) * 1000000
     race_end = int( time.mktime( time.strptime( date + " " + form.getvalue('end','23:59'), "%Y%m%d %H:%M")) ) * 1000000
 else:
@@ -71,7 +75,8 @@ except IOError:
     print ("URLia ", url, " ei onnistuttu resolvoimaan!")
     print ("Tai sitten osoite ei vaan vastaa!")
 
-
+if (debug):
+	print (contents.info())
 
 data = []
 maxlaps = 0
@@ -112,6 +117,9 @@ def print_tag (tag):
 def time_to_localtime (utime):
     return (time.strftime( '%H:%M:%S', time.localtime(utime/1000000)))
 
+def time_to_localtime_debug (utime):
+    return (time.strftime( '%F %H:%M:%S', time.localtime(utime/1000000)))
+
 def newtime_to_ctime (utime):
     strtime = unicodedata.normalize('NFKD', utime).encode('ascii','ignore')
     # print ("Tulkitaan ", strtime)
@@ -128,19 +136,29 @@ tags = read_tags( 'tags.csv')
 for line in contents:
     # First let's skip logfile timestamp
     jsonline=line.split(",",2)
+    if (debug):
+        print ("Luen rivia: ", jsonline[2])
     # Let's read json content to list of dicts
     try:
         parsed=json.loads(jsonline[2])
+        if (debug):
+            print ("Loysin json:ia rivilta:", parsed)
     except ValueError:
         print ("Rivilta: ", jsonline[2])
         print ("ei onnistuttu parsimaan json:ia.")
-
     # Skip heartbeats
     if ( not parsed['tag_reads'][0]['isHeartBeat'] ):
         # We might have several tagreads per line
         # That's why we loop
         for read in parsed['tag_reads']:
+            if (debug):
+                print ("Parsin EPC:ta: ", read)
             epc = unicodedata.normalize('NFKD', read['epc']).encode('ascii','ignore')
+            if (debug):
+                print ("Loysin EPC:n ", epc)
+                print ("Testaan onko ", read['antennaPort'], " in ", startports)
+                print ("  ja onko ", read['firstSeenTimestamp'], "(", time_to_localtime_debug(read['firstSeenTimestamp']), ") >", race_start, " (", time_to_localtime_debug(race_start), ")" )
+                print ("  ja onko ", read['firstSeenTimestamp'], "(", time_to_localtime_debug(read['firstSeenTimestamp']), ") <", race_end, " (", time_to_localtime_debug(race_end), ")" )
             if (read['antennaPort'] in startports and read['firstSeenTimestamp'] > race_start and read['firstSeenTimestamp'] < race_end):
                 if (debug):
                     print ("Lahto: ", epc, " ", time_to_localtime(read['firstSeenTimestamp']) )
@@ -168,6 +186,9 @@ for line in contents:
                 laptimes[epc].append(read['firstSeenTimestamp']-starttimes[epc][-1])
                 if (len (laptimes[epc])) > maxlaps:
                     maxlaps += 1
+            else:
+                if (debug):
+                    print ("Ei huomioitavaa rivilla")
             #timestamps[read['epc']].append(read['firstSeenTimestamp'])
             #data.append(read)
             #pprint (read)
