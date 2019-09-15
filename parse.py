@@ -2,7 +2,7 @@
 import json
 import time
 from pprint import pprint
-import urllib
+import urllib2
 #from urllib import request
 import unicodedata
 from collections import defaultdict
@@ -11,8 +11,13 @@ import csv
 import os
 import sys
 
+# Some settings for code
 startports = [1, 3]
 endports = [2, 4]
+log_url = "http://karhu.serveftp.net:5000/Ajanotto/"
+csv_url = "https://docs.google.com/spreadsheets/d/1dtqQQ6azJ5J0VBEHnnKLAkp3SlUK_6OzSk2RQivY6L0/export?format=csv&id=1dtqQQ6azJ5J0VBEHnnKLAkp3SlUK_6OzSk2RQivY6L0&gid=0"
+
+# End of settings
 
 # dict contains lists of timestamps indexed by epc
 starttimes = defaultdict(list)
@@ -53,7 +58,7 @@ if "HTTP_USER_AGENT" in os.environ:
     #date = form.getvalue('date', datetime.now().strftime('%Y%m%d'))
     date = form.getvalue('date', '20190602')
     if (debug):
-        print ("Kaytetty date:", date)
+        print ("Kaytetty date: " + date)
     race_start = int( time.mktime( time.strptime( date + " " + form.getvalue('start','10:00'), "%Y%m%d %H:%M")) ) * 1000000
     race_end = int( time.mktime( time.strptime( date + " " + form.getvalue('end','23:59'), "%Y%m%d %H:%M")) ) * 1000000
 else:
@@ -68,9 +73,9 @@ else:
 
 try:
     if (debug):
-        print ("Generating url = http://karhu.serveftp.net:5000/Ajanotto/" + date + ".txt")
-    url = "http://karhu.serveftp.net:5000/Ajanotto/" + date + ".txt"
-    contents = urllib.urlopen( url )
+        print ("Generating url = " + log_url + date + ".txt")
+    url = log_url + date + ".txt"
+    contents = urllib2.urlopen( url )
 except IOError:
     print ("URLia ", url, " ei onnistuttu resolvoimaan!")
     print ("Tai sitten osoite ei vaan vastaa!")
@@ -90,13 +95,12 @@ def print_laptime (usec):
     return str( timedelta( milliseconds=usec//1000 ) )
 
 def read_tags (tagfile):
-    my_url = "https://docs.google.com/spreadsheets/d/1dtqQQ6azJ5J0VBEHnnKLAkp3SlUK_6OzSk2RQivY6L0/export?format=csv&id=1dtqQQ6azJ5J0VBEHnnKLAkp3SlUK_6OzSk2RQivY6L0&gid=0"
     try:
         if (debug):
-            print ("Trying to read .csv from " + my_url )
-        csvfile = urllib.urlopen( my_url )
+            print ("Trying to read .csv from " + csv_url )
+        csvfile = urllib2.urlopen( csv_url )
     except IOError:
-        print ("URLia ", my_url, " ei onnistuttu resolvoimaan!")
+        print ("URLia ", csv_url, " ei onnistuttu resolvoimaan!")
         print ("Tai sitten osoite ei vaan vastaa!")
 
     my_tags ={}
