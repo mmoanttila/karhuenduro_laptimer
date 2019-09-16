@@ -23,6 +23,8 @@ csv_url = "https://docs.google.com/spreadsheets/d/1dtqQQ6azJ5J0VBEHnnKLAkp3SlUK_
 starttimes = defaultdict(list)
 endtimes = defaultdict(list)
 laptimes = defaultdict(list)
+laps = defaultdict() 
+total = defaultdict()
 
 # check for debug cmd parameter
 if ( len(sys.argv) > 1 and '-d' in sys.argv ):
@@ -212,6 +214,11 @@ for line in contents:
 #    print ("Lokin analysoinnissa tuli tyyppivirhe!")
 #    print ("Tarkoittanee, etta se sisaltaa jotain odottamatonta moskaa!")
 
+# Yritetaan laskea vahan statistiikkaa tuloksista.
+for epc, times in laptimes.iteritems():
+    laps[epc] = len (times) 
+    total[epc] = sum (times)
+
 print "Ajettu", maxlaps, "kierrosta."
 if (use_cgi):
     print "</pre>"
@@ -222,14 +229,12 @@ if (use_cgi):
         print "    <td>Total</td>"
         print "  </tr>"
         print "  <tr>"
-        total = 0.0
         for col in range(0,len(times)):
-            total = total + times[col]
             if ( (col == len(times)-1 ) ):
                 print "    <td class=\"laptime\" colspan=\"", maxlaps-col, "\">", print_laptime( times[col] )[:-3], "</td>"
             else: 
                 print "    <td class=\"laptime\">", print_laptime( times[col] )[:-3], "</td>"
-        print "    <td>", print_laptime( total )[:-3], "</td>"
+        print "    <td>", print_laptime( total[epc] )[:-3], "</td>"
         print "  </tr>"
     print "</table>"
     print "<pre>"
@@ -237,11 +242,9 @@ else:
     print "Laptimes per epc"
     for epc, times in laptimes.iteritems():
         print print_tag(epc), ": "
-        total = 0.0
         for col in range(0,len(times)):
-            total = total + times[col]
             print "    ", print_laptime( times[col] )[:-3], "secs"
-        print "Total:", print_laptime( total )[:-3] 
+        print "Total:", print_laptime( total[epc] )[:-3] 
 
 #pprint(laptimes)
 
