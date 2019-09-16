@@ -206,13 +206,6 @@ for line in contents:
             else:
                 if (debug):
                     print ("Ei huomioitavaa rivilla")
-            #timestamps[read['epc']].append(read['firstSeenTimestamp'])
-            #data.append(read)
-            #pprint (read)
-            #pprint (type (read))
-#except TypeError:
-#    print ("Lokin analysoinnissa tuli tyyppivirhe!")
-#    print ("Tarkoittanee, etta se sisaltaa jotain odottamatonta moskaa!")
 
 # Yritetaan laskea vahan statistiikkaa tuloksista.
 for epc, times in laptimes.iteritems():
