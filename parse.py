@@ -57,6 +57,8 @@ if "HTTP_USER_AGENT" in os.environ:
     # Let's use current date if not given on url
     #date = form.getvalue('date', datetime.now().strftime('%Y%m%d'))
     date = form.getvalue('date', '20190602')
+    if ( '-' in date ):
+        date = date.replace("-","")
     mydebug = form.getvalue('debug', 'False')
     if ( mydebug == 'True' or mydebug == 'true' or mydebug == 1 ):
         debug = True
