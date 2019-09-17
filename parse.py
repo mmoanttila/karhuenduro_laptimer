@@ -91,7 +91,7 @@ except IOError:
     print ("Tai sitten osoite ei vaan vastaa!")
 
 if (debug):
-	print (contents.info())
+    print (contents.info())
 
 data = []
 maxlaps = 0
@@ -222,7 +222,9 @@ if (use_cgi):
     # tama palauttaa laps-dictin sortattuna valueiden mukaan
     for mylaps, epc in sorted ( ((v,k) for k,v in laps.items()), reverse=True):
         print "  <tr>"
-        print "    <td colspan=\"", maxlaps, "\">", print_tag( epc ), str(mylaps), " kierrosta, Total: ", print_laptime( total[epc] )[:-3] , "</td>"
+        print "    <td colspan=\"3\">", print_tag( epc ), "</td>"
+        print "    <td>", str(mylaps), " kierrosta</td>"
+        print "    <td colspan=\"", maxlaps-4, "\">Total: ", print_laptime( total[epc] )[:-3] , "</td>"
         print "  </tr>"
         print "  <tr>"
         for col in range(0,len(laptimes[epc])):
