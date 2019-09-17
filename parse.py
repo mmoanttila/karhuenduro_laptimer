@@ -109,8 +109,8 @@ def read_tags (tagfile):
         if (debug):
             print ("Trying to read .csv from " + csv_url )
         csvfile = urllib2.urlopen( csv_url )
-        if (debug):
-            print ("CSV last modified :" + csvfile.headers['last-modified'] )
+       # if (debug):
+       #     print ("CSV last modified :" + csvfile.headers['last-modified'] )
 
     except IOError:
         print ("URLia ", csv_url, " ei onnistuttu resolvoimaan!")
