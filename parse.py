@@ -218,18 +218,22 @@ print "Ajettu", maxlaps, "kierrosta."
 if (use_cgi):
     print "</pre>"
     print "<table border=\"1\">"
-    for epc, times in laptimes.iteritems():
+    # for epc, times in laptimes.iteritems():
+    # tama palauttaa laps-dictin sortattuna valueiden mukaan
+    for mylaps, epc in sorted ( ((v,k) for k,v in laps.items()), reverse=True):
         print "  <tr>"
         print "    <td colspan=\"", maxlaps, "\">", print_tag( epc ), "</td>"
+        print "    <td>Laps</td>"
         print "    <td>Total</td>"
         print "  </tr>"
         print "  <tr>"
-        for col in range(0,len(times)):
-            if ( (col == len(times)-1 ) ):
-                print "    <td class=\"laptime\" colspan=\"", maxlaps-col, "\">", print_laptime( times[col] )[:-3], "</td>"
+        for col in range(0,len(laptimes[epc])):
+            if ( (col == len(laptimes[epc])-1 ) ):
+                print "    <td class=\"laptime\" colspan=\"", maxlaps-col, "\">", print_laptime( laptimes[epc][col] )[:-3], "</td>"
             else: 
-                print "    <td class=\"laptime\">", print_laptime( times[col] )[:-3], "</td>"
-        print "    <td>", print_laptime( total[epc] )[:-3], "</td>"
+                print "    <td class=\"laptime\">", print_laptime( laptimes[epc][col] )[:-3], "</td>"
+        print "    <td>", str(mylaps), "</td>"
+        print ("    <td>" + print_laptime( total[epc] )[:-3] + "</td>")
         print "  </tr>"
     print "</table>"
     print "<pre>"
