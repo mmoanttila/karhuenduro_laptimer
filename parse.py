@@ -209,8 +209,10 @@ for line in contents:
 
 # Yritetaan laskea vahan statistiikkaa tuloksista.
 for epc, times in laptimes.iteritems():
-    laps[epc] = len (times) 
-    total[epc] = sum (times)
+    laps[epc] = len(times)
+    total[epc] = sum(times)
+    if (debug):
+        print (epc + ": laps=" + str(len (times)) + " total=" + str(sum(times)) )
 
 print "Ajettu", maxlaps, "kierrosta."
 if (use_cgi):
@@ -232,14 +234,15 @@ if (use_cgi):
     print "</table>"
     print "<pre>"
 else:
-    print "Laptimes per epc"
-    for epc, times in laptimes.iteritems():
-        print print_tag(epc), ": "
-        for col in range(0,len(times)):
-            print "    ", print_laptime( times[col] )[:-3], "secs"
-        print "Total:", print_laptime( total[epc] )[:-3] 
-
-#pprint(laptimes)
+    print "Kierrosajat"
+    # tama palauttaa laps-dictin sortattuna valueiden mukaan
+    for mylaps, epc in sorted ( ((v,k) for k,v in laps.items()), reverse=True):
+        times = laptimes[epc]
+        if (debug):
+            print ("Trying to print epc " + epc + " with laps=" + str(mylaps))
+        print (print_tag(epc) + ": " + str(mylaps) + " kierrosta Total: " + print_laptime( total[epc] )[:-3])
+        for col in range(0,len(laptimes[epc])):
+            print "    ", print_laptime( laptimes[epc][col] )[:-3], "secs"
 
 if (use_cgi):
     print '</pre>'
