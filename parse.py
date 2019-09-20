@@ -7,6 +7,7 @@ import urllib2
 import unicodedata
 from collections import defaultdict
 from datetime import timedelta, datetime
+from operator import itemgetter
 import csv
 import os
 import sys
@@ -23,8 +24,7 @@ csv_url = "https://docs.google.com/spreadsheets/d/1dtqQQ6azJ5J0VBEHnnKLAkp3SlUK_
 starttimes = defaultdict(list)
 endtimes = defaultdict(list)
 laptimes = defaultdict(list)
-laps = defaultdict() 
-total = defaultdict()
+results = []
 
 # check for debug cmd parameter
 if ( len(sys.argv) > 1 and '-d' in sys.argv ):
@@ -209,22 +209,27 @@ for line in contents:
 
 # Yritetaan laskea vahan statistiikkaa tuloksista.
 for epc, times in laptimes.iteritems():
-    laps[epc] = len(times)
-    total[epc] = sum(times)
+    results.append ( (epc, len(times), sum(times) ) ) # List of tuples (epc, laps, total)
     if (debug):
         print (epc + ": laps=" + str(len (times)) + " total=" + str(sum(times)) )
+
+# Kaksi-vaiheinen sorttaus
+s = sorted (results, key=itemgetter(2)) # sort on secondary key
+results_sorted = sorted (s, key=itemgetter(1), reverse=True) # Sort on primary key descending
+
+if (debug):
+    print ("Sorttauksen tulokset:")
+    pprint (results_sorted)
 
 print "Ajettu", maxlaps, "kierrosta."
 if (use_cgi):
     print "</pre>"
     print "<table border=\"1\">"
-    # for epc, times in laptimes.iteritems():
-    # tama palauttaa laps-dictin sortattuna valueiden mukaan
-    for mylaps, epc in sorted ( ((v,k) for k,v in laps.items()), reverse=True):
+    for epc, mylaps, mytotal in results_sorted:
         print "  <tr>"
         print "    <td colspan=\"3\">", print_tag( epc ), "</td>"
         print "    <td>", str(mylaps), " kierrosta</td>"
-        print "    <td colspan=\"", maxlaps-4, "\">Total: ", print_laptime( total[epc] )[:-3] , "</td>"
+        print "    <td colspan=\"", maxlaps-4, "\">Total: ", print_laptime( mytotal )[:-3] , "</td>"
         print "  </tr>"
         print "  <tr>"
         for col in range(0,len(laptimes[epc])):
@@ -237,15 +242,14 @@ if (use_cgi):
     print "<pre>"
 else:
     print "Kierrosajat"
-    # tama palauttaa laps-dictin sortattuna valueiden mukaan
-    for mylaps, epc in sorted ( ((v,k) for k,v in laps.items()), reverse=True):
-        times = laptimes[epc]
+    for epc, mylaps, mytotal in results_sorted:
+        #times = laptimes[epc]
         if (debug):
             print ("Trying to print epc " + epc + " with laps=" + str(mylaps))
-        print (print_tag(epc) + ": " + str(mylaps) + " kierrosta Total: " + print_laptime( total[epc] )[:-3])
+        print (print_tag(epc) + ": " + str(mylaps) + " kierrosta Total: " + print_laptime( mytotal )[:-3])
         for col in range(0,len(laptimes[epc])):
             print "    ", print_laptime( laptimes[epc][col] )[:-3], "secs"
-
+    
 if (use_cgi):
     print '</pre>'
     print '</html>'
