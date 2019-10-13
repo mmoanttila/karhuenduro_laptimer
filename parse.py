@@ -225,13 +225,15 @@ print "Ajettu", maxlaps, "kierrosta."
 if (use_cgi):
     print "</pre>"
     print "<table border=\"1\">"
+    my_number=1
     for epc, mylaps, mytotal in results_sorted:
         print "  <tr>"
-        print "    <td colspan=\"3\">", print_tag( epc ), "</td>"
+        print "    <td colspan=\"3\">",str(my_number),". ", print_tag( epc ), "</td>"
         print "    <td>", str(mylaps), " kierrosta</td>"
         print "    <td colspan=\"", maxlaps-4, "\">Total: ", print_laptime( mytotal )[:-3] , "</td>"
         print "  </tr>"
         print "  <tr>"
+        my_number=my_number+1
         for col in range(0,len(laptimes[epc])):
             if ( (col == len(laptimes[epc])-1 ) ):
                 print "    <td class=\"laptime\" colspan=\"", maxlaps-col, "\">", print_laptime( laptimes[epc][col] )[:-3], "</td>"
@@ -242,10 +244,13 @@ if (use_cgi):
     print "<pre>"
 else:
     print "Kierrosajat"
+    my_number=1
     for epc, mylaps, mytotal in results_sorted:
         #times = laptimes[epc]
         if (debug):
             print ("Trying to print epc " + epc + " with laps=" + str(mylaps))
+        print (str(my_number) + ". ")
+        my_number=my_number+1
         print (print_tag(epc) + ": " + str(mylaps) + " kierrosta Total: " + print_laptime( mytotal )[:-3])
         for col in range(0,len(laptimes[epc])):
             print "    ", print_laptime( laptimes[epc][col] )[:-3], "secs"
