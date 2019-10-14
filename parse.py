@@ -228,7 +228,7 @@ if (use_cgi):
     my_number=1
     for epc, mylaps, mytotal in results_sorted:
         print "  <tr>"
-        print "    <td colspan=\"3\">",str(my_number),". ", print_tag( epc ), "</td>"
+        print ("    <td colspan=\"3\">" + str(my_number) + ". " + print_tag( epc ) + "</td>")
         print "    <td>", str(mylaps), " kierrosta</td>"
         print "    <td colspan=\"", maxlaps-4, "\">Total: ", print_laptime( mytotal )[:-3] , "</td>"
         print "  </tr>"
