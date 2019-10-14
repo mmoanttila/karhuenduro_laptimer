@@ -220,10 +220,11 @@ results_sorted = sorted (s, key=itemgetter(1), reverse=True) # Sort on primary k
 if (debug):
     print ("Sorttauksen tulokset:")
     pprint (results_sorted)
+    print "Ajettu", maxlaps, "kierrosta."
 
-print "Ajettu", maxlaps, "kierrosta."
 if (use_cgi):
     print "</pre>"
+    print ("<h2>Tulokset " + date[6:8] + "." + date[4:6] + "." + date[0:4] + "</h2>")
     print "<table border=\"1\">"
     my_number=1
     for epc, mylaps, mytotal in results_sorted:
