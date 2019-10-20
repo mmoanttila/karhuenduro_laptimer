@@ -20,6 +20,16 @@ csv_url = "https://docs.google.com/spreadsheets/d/1dtqQQ6azJ5J0VBEHnnKLAkp3SlUK_
 
 # End of settings
 
+# Parameters:
+#
+# date esim. 2019-10-01
+#   pvm, jonka lokia parsitaan (mm. tiedostonnimi)
+# mode = <laptime|>
+#   tapa jolla kierros- tai pätkäajat lasketaan:
+#   laptime: yksi lukija käytössä ja kierros lasketaan aina edelliseen leimaukseen verrattuna
+#   laptime2: yhdellä lukijalla, mutta ekakierros alkaa kellon mukaan (starttime)
+#   stagetime: kaksi lukijaa ja kierrosaika lasketaan aina edelliseen ykkösleimaukseen verrattuna
+
 # dict contains lists of timestamps indexed by epc
 starttimes = defaultdict(list)
 endtimes = defaultdict(list)
@@ -59,6 +69,7 @@ if "HTTP_USER_AGENT" in os.environ:
     # Let's use current date if not given on url
     #date = form.getvalue('date', datetime.now().strftime('%Y%m%d'))
     date = form.getvalue('date', '20190602')
+    mode = form.getvalue('mode', 'laptime')
     if ( '-' in date ):
         date = date.replace("-","")
     mydebug = form.getvalue('debug', 'False')
@@ -67,16 +78,19 @@ if "HTTP_USER_AGENT" in os.environ:
 
     if (debug):
         print ("Kaytetty date: " + date)
+        print ("Laskentatapa: " + mode)
     race_start = int( time.mktime( time.strptime( date + " " + form.getvalue('start','10:00'), "%Y%m%d %H:%M")) ) * 1000000
     race_end = int( time.mktime( time.strptime( date + " " + form.getvalue('end','23:59'), "%Y%m%d %H:%M")) ) * 1000000
 else:
     use_cgi = False
     from cgi import parse_qs
     date = os.getenv('date', '20190602')
+    mode = os.getenv('mode', 'laptime')
     race_start = int( time.mktime( time.strptime( date + " " + os.getenv('start','10:00'), "%Y%m%d %H:%M")) ) * 1000000
     if (debug): 
         print ("Converting :" + date + " " + os.getenv('start','10:00') + " as %Y%m%d %H:%M")
         print ("Race start time: " + str(race_start))
+        print ("Mode: " + mode)
     race_end = int( time.mktime( time.strptime( date + " " + os.getenv('end','23:59'), "%Y%m%d %H:%M")) ) * 1000000
 
 try:
