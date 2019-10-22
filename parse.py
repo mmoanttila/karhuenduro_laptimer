@@ -198,9 +198,14 @@ for line in contents:
                 print ("  ja onko ", read['firstSeenTimestamp'], "(", time_to_localtime_debug(read['firstSeenTimestamp']), ") >", race_start, " (", time_to_localtime_debug(race_start), ")" )
                 print ("  ja onko ", read['firstSeenTimestamp'], "(", time_to_localtime_debug(read['firstSeenTimestamp']), ") <", race_end, " (", time_to_localtime_debug(race_end), ")" )
             if (read['antennaPort'] in startports and read['firstSeenTimestamp'] > race_start and read['firstSeenTimestamp'] < race_end):
+                # If starting with starttime (mode=laptime2), we should add one timestamp for that
+                if ( mode == 'laptime2' and len (starttimes[epc]) == 0 ):
+                    if (debug):
+                        print ("Lisataan lahtoleima := start_time ", time_to_localtime_debug(race_start) )
+                    starttimes[epc].append(race_start)
+
                 if (debug):
                     print ("Lahto: ", epc, " ", time_to_localtime(read['firstSeenTimestamp']) )
-                    #print ("Lahto: ", read['epc'], " ", newtime_to_ctime(read['firstSeenTimestamp']) )
                 starttimes[epc].append(read['firstSeenTimestamp'])
                 # We try to figure if we have end-tags at all
                 if ( len(starttimes[epc]) > 1 and len(endtimes[epc]) == 0):
