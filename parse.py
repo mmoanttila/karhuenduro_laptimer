@@ -143,7 +143,7 @@ def read_tags (tagfile):
     for row in csvreader:
         if (debug):
             print "Luin tagin: " + row[2] + " = " + row[1]
-        my_tags[row[2]] = row[1]
+        my_tags[row[2]] = row[1] + " | " + row[0]
     return my_tags
 
 def print_tag (tag):
