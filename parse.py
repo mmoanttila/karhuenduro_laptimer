@@ -25,10 +25,10 @@ csv_url = "https://docs.google.com/spreadsheets/d/1dtqQQ6azJ5J0VBEHnnKLAkp3SlUK_
 # date esim. 2019-10-01
 #   pvm, jonka lokia parsitaan (mm. tiedostonnimi)
 # mode = <laptime|>
-#   tapa jolla kierros- tai pätkäajat lasketaan:
-#   laptime: yksi lukija käytössä ja kierros lasketaan aina edelliseen leimaukseen verrattuna
-#   laptime2: yhdellä lukijalla, mutta ekakierros alkaa kellon mukaan (starttime)
-#   stagetime: kaksi lukijaa ja kierrosaika lasketaan aina edelliseen ykkösleimaukseen verrattuna
+#   tapa jolla kierros- tai patka-ajat lasketaan:
+#   laptime: yksi lukija kaytossa ja kierros lasketaan aina edelliseen leimaukseen verrattuna
+#   laptime2: yhdella lukijalla, mutta ekakierros alkaa kellon mukaan (starttime)
+#   stagetime: kaksi lukijaa ja kierrosaika lasketaan aina edelliseen ykkosleimaukseen verrattuna
 
 # dict contains lists of timestamps indexed by epc
 starttimes = defaultdict(list)
