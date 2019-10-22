@@ -110,6 +110,13 @@ if (debug):
 data = []
 maxlaps = 0
 
+def send_csvfile (data, filename="tulokset.csv"):
+    if (debug):
+        print ("Trying to return csv-file to browser as " + filename )
+    # First suitable headers
+    print ("Content-Type:text/csv; name=\"" + filename + "\"\r\n")
+    print ("Content-Disposition: attachment; filename=\"" + filename + "\"\r\n\n")
+
 def print_laptime (usec):
     if (debug):
         td = timedelta( milliseconds=usec/1000 )
