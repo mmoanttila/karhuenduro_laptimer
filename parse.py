@@ -28,7 +28,7 @@ csv_url = "https://docs.google.com/spreadsheets/d/1dtqQQ6azJ5J0VBEHnnKLAkp3SlUK_
 #   tapa jolla kierros- tai patka-ajat lasketaan:
 #   laptime: yksi lukija kaytossa ja kierros lasketaan aina edelliseen leimaukseen verrattuna
 #   laptime2: yhdella lukijalla, mutta ekakierros alkaa kellon mukaan (starttime)
-#   stagetime: kaksi lukijaa ja kierrosaika lasketaan aina edelliseen ykkosleimaukseen verrattuna
+#   stage: kaksi lukijaa ja kierrosaika lasketaan aina edelliseen ykkosleimaukseen verrattuna
 
 # dict contains lists of timestamps indexed by epc
 starttimes = defaultdict(list)
