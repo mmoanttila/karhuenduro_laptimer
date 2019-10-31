@@ -199,7 +199,7 @@ for line in contents:
             allowed_tag = re.search(tag_filter, epc)
             if (not allowed_tag):
                 if (debug):
-                    print (epc, " ei ole meidän tagi.")
+                    print (epc, " ei ole meidan tagi.")
                 continue
             if (debug):
                 print ("Loysin EPC:n ", epc)
