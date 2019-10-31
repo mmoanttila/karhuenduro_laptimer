@@ -198,6 +198,8 @@ for line in contents:
             epc = unicodedata.normalize('NFKD', read['epc']).encode('ascii','ignore')
             allowed_tag = re.search(tag_filter, epc)
             if (not allowed_tag):
+                if (debug):
+                    print (epc, " ei ole meidän tagi.")
                 continue
             if (debug):
                 print ("Loysin EPC:n ", epc)
