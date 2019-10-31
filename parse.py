@@ -301,6 +301,7 @@ else:
             print "    ", print_laptime( laptimes[epc][col] )[:-3], "secs"
     
 if (use_cgi):
+    print ("<br>\n<hr>\n<a href=\"tulokset-" + date + ".html\">Valmiit tulokset</a>")
     double_print (FH, "</html>")
     FH.close()
 #print (type(parsed['tag_reads']))
