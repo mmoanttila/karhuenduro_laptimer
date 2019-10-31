@@ -138,7 +138,9 @@ def read_tags (tagfile):
     except IOError:
         print ("URLia ", csv_url, " ei onnistuttu resolvoimaan!")
         print ("Tai sitten osoite ei vaan vastaa!")
-
+        print ("Kaytetaan paikallista kopioita: " , tagfile)
+        csvfile = open(tagfile, "r")
+        
     my_tags ={}
     # with open( tagfile ) as csvfile:
     csvreader = csv.reader( csvfile, delimiter=',' )
