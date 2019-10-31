@@ -169,6 +169,10 @@ def newtime_to_ctime (utime):
     return (time.mktime(time.strptime(strtime,"%Y-%m-%dT%H:%M:%S.%fZ")))
     # 2019-03-24T20:19:03.872083Z
 
+def double_print (FO, line):
+    print (line)
+    FO.write (line + "\n")
+
 tags = read_tags( 'tags.csv')
 
 #with open('20190530.txt',mode = 'r') as contents:
@@ -264,25 +268,25 @@ if (debug):
 
 if (use_cgi):
     print "</pre>"
-    print ("<h2>Tulokset " + date[6:8] + "." + date[4:6] + "." + date[0:4] + "</h2>")
-    print "<table border=\"1\">"
+    FH = open ("tulokset-" + date + ".html", "w")
+    double_print (FH, "<h2>Tulokset " + date[6:8] + "." + date[4:6] + "." + date[0:4] + "</h2>")
+    double_print (FH, "<table border=\"1\">")
     my_number=1
     for epc, mylaps, mytotal in results_sorted:
-        print "  <tr>"
-        print ("    <td colspan=\"3\">" + str(my_number) + ". " + print_tag( epc ) + "</td>")
-        print "    <td>", str(mylaps), " kierrosta</td>"
-        print "    <td colspan=\"", maxlaps-4, "\">Total: ", print_laptime( mytotal )[:-3] , "</td>"
-        print "  </tr>"
-        print "  <tr>"
+        double_print (FH, "  <tr>")
+        double_print (FH, "    <td colspan=\"3\">" + str(my_number) + ". " + print_tag( epc ) + "</td>")
+        double_print (FH, "    <td>" + str(mylaps) + " kierrosta</td>")
+        double_print (FH, "    <td colspan=\"" + str(maxlaps-4) + "\">Total: " + print_laptime( mytotal )[:-3] + "</td>")
+        double_print (FH, "  </tr>")
+        double_print (FH, "  <tr>")
         my_number=my_number+1
         for col in range(0,len(laptimes[epc])):
             if ( (col == len(laptimes[epc])-1 ) ):
-                print "    <td class=\"laptime\" colspan=\"", maxlaps-col, "\">", print_laptime( laptimes[epc][col] )[:-3], "</td>"
+                double_print (FH, "    <td class=\"laptime\" colspan=\"" + str(maxlaps-col) + "\">" + print_laptime( laptimes[epc][col] )[:-3] + "</td>")
             else: 
-                print "    <td class=\"laptime\">", print_laptime( laptimes[epc][col] )[:-3], "</td>"
-        print "  </tr>"
-    print "</table>"
-    print "<pre>"
+                double_print (FH, "    <td class=\"laptime\">" + print_laptime( laptimes[epc][col] )[:-3] + "</td>")
+        double_print (FH, "  </tr>")
+    double_print (FH, "</table>")
 else:
     print "Kierrosajat"
     my_number=1
@@ -297,8 +301,8 @@ else:
             print "    ", print_laptime( laptimes[epc][col] )[:-3], "secs"
     
 if (use_cgi):
-    print '</pre>'
-    print '</html>'
+    double_print (FH, "</html>")
+    FH.close()
 #print (type(parsed['tag_reads']))
 #with open('log.txt') as f:
 #    data = json.load(f)
