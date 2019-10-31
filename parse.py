@@ -233,9 +233,14 @@ for line in contents:
                 #pprint (read['firstSeenTimestamp'])
                 #pprint (starttimes[read['epc']][-1])
                 # Assuming last starttime is for current leg
-                if (debug):
-                    print ("Laptime for ", epc, " : ", (read['firstSeenTimestamp'] - starttimes[epc][-1])/1000000, " secs") 
-                laptimes[epc].append(read['firstSeenTimestamp']-starttimes[epc][-1])
+                try:
+                    if (debug):
+                        print ("Laptime for ", epc, " : ", (read['firstSeenTimestamp'] - starttimes[epc][-1])/1000000, " secs") 
+                    laptimes[epc].append(read['firstSeenTimestamp']-starttimes[epc].pop() )
+                except IndexError:
+                    if (debug):
+                        print ("Loytyi ylimaarainen maalileimaus: ", time_to_localtime(read['firstSeenTimestamp']) )
+                    continue
                 if (len (laptimes[epc])) > maxlaps:
                     maxlaps += 1
             else:
