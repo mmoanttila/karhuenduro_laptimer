@@ -9,6 +9,7 @@ from collections import defaultdict
 from datetime import timedelta, datetime
 from operator import itemgetter
 import csv
+import re
 import os
 import sys
 
@@ -17,6 +18,7 @@ startports = [1, 3]
 endports = [2, 4]
 log_url = "http://karhu.serveftp.net:5000/Ajanotto/"
 csv_url = "https://docs.google.com/spreadsheets/d/1dtqQQ6azJ5J0VBEHnnKLAkp3SlUK_6OzSk2RQivY6L0/export?format=csv&id=1dtqQQ6azJ5J0VBEHnnKLAkp3SlUK_6OzSk2RQivY6L0&gid=0"
+tag_filter = "^BAD0...."
 
 # End of settings
 
@@ -192,6 +194,9 @@ for line in contents:
             if (debug):
                 print ("Parsin EPC:ta: ", read)
             epc = unicodedata.normalize('NFKD', read['epc']).encode('ascii','ignore')
+            allowed_tag = re.search(tag_filter, epc)
+            if (not allowed_tag):
+                continue
             if (debug):
                 print ("Loysin EPC:n ", epc)
                 print ("Testaan onko ", read['antennaPort'], " in ", startports)
