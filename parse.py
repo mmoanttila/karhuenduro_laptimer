@@ -128,19 +128,32 @@ def print_laptime (usec):
     return str( timedelta( milliseconds=usec//1000 ) )
 
 def read_tags (tagfile):
-    try:
-        if (debug):
-            print ("Trying to read .csv from " + csv_url )
-        csvfile = urllib2.urlopen( csv_url )
-       # if (debug):
-       #     print ("CSV last modified :" + csvfile.headers['last-modified'] )
+    # only use local-cache, if it's newer than one hour
+    if ( not os.path.exists (tagfile ) or time.time() - os.path.getmtime (tagfile) > 3600 ):
+        try:
+            if (debug):
+                print ("Trying to read .csv from " + csv_url )
+            csvfile = urllib2.urlopen( csv_url )
+        # if (debug):
+        #     print ("CSV last modified :" + csvfile.headers['last-modified'] )
 
-    except IOError:
-        print ("URLia ", csv_url, " ei onnistuttu resolvoimaan!")
-        print ("Tai sitten osoite ei vaan vastaa!")
-        print ("Kaytetaan paikallista kopioita: " , tagfile)
+        except IOError:
+            print ("URLia ", csv_url, " ei onnistuttu resolvoimaan!")
+            print ("Tai sitten osoite ei vaan vastaa!")
+            if (os.path.exists(tagfile):
+                print ("Kaytetaan paikallista kopioita: " , tagfile)
+                csvfile = open(tagfile, "r")
+        if (debug): 
+            print ("Updating local tags.csv cache")
+        with open(tagfile, 'wb') as csvcache:
+            csvwriter = csv.writer(csvcache, delimiter=',', quoting=csv.QUOTE_MINIMAL)
+            csvreader = csv.reader( csvfile, delimiter=',' )
+            for row in csvreader:
+                csvwriter.writerow(row)
+    else: 
+        if (debug):
+            print ("Using local tag-csv-cache: " + tagfile)
         csvfile = open(tagfile, "r")
-        
     my_tags ={}
     # with open( tagfile ) as csvfile:
     csvreader = csv.reader( csvfile, delimiter=',' )
