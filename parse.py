@@ -140,7 +140,7 @@ def read_tags (tagfile):
         except IOError:
             print ("URLia ", csv_url, " ei onnistuttu resolvoimaan!")
             print ("Tai sitten osoite ei vaan vastaa!")
-            if (os.path.exists(tagfile):
+            if (os.path.exists(tagfile)):
                 print ("Kaytetaan paikallista kopioita: " , tagfile)
                 csvfile = open(tagfile, "r")
         if (debug): 
