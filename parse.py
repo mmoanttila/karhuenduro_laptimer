@@ -272,7 +272,7 @@ for epc, times in laptimes.iteritems():
     if (mode == 'stage' and numlaps <> 0 and len(times) > numlaps):
         if (debug):
             print ("Tagilla " + epc + " on ylimaaraisia kierroksia " + str(len(times)) )
-        results.append ( (epc, numlaps, sum(times[:numlaps-1]) ) ) # Vain ekat numlaps kierrosta vaikuttavat tuloksiin
+        results.append ( (epc, numlaps, sum(times[:numlaps]) ) ) # Vain ekat numlaps kierrosta vaikuttavat tuloksiin
     else:
         results.append ( (epc, len(times), sum(times) ) ) # List of tuples (epc, laps, total)
     if (debug):
