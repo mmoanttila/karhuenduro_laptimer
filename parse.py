@@ -72,6 +72,8 @@ if "HTTP_USER_AGENT" in os.environ:
     #date = form.getvalue('date', datetime.now().strftime('%Y%m%d'))
     date = form.getvalue('date', '20190602')
     mode = form.getvalue('mode', 'laptime')
+    numlaps = int(form.getvalue('laps', 0))
+
     if ( '-' in date ):
         date = date.replace("-","")
     mydebug = form.getvalue('debug', 'False')
@@ -266,9 +268,18 @@ for line in contents:
 
 # Yritetaan laskea vahan statistiikkaa tuloksista.
 for epc, times in laptimes.iteritems():
-    results.append ( (epc, len(times), sum(times) ) ) # List of tuples (epc, laps, total)
+    # Jos patka-ajat ja number of laps given
+    if (mode == 'stage' and numlaps <> 0 and len(times) > numlaps):
+        if (debug):
+            print ("Tagilla " + epc + " on ylimaaraisia kierroksia " + str(len(times)) )
+        results.append ( (epc, numlaps, sum(times[:numlaps-1]) ) ) # Vain ekat numlaps kierrosta vaikuttavat tuloksiin
+    else:
+        results.append ( (epc, len(times), sum(times) ) ) # List of tuples (epc, laps, total)
     if (debug):
         print (epc + ": laps=" + str(len (times)) + " total=" + str(sum(times)) )
+
+# results =: list of:
+#   epc, no_laps, kokonaisaika
 
 # Kaksi-vaiheinen sorttaus
 s = sorted (results, key=itemgetter(2)) # sort on secondary key
