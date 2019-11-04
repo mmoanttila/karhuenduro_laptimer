@@ -152,12 +152,13 @@ def read_tags (tagfile):
             csvreader = csv.reader( csvfile, delimiter=',' )
             for row in csvreader:
                 csvwriter.writerow(row)
-    else: 
-        if (debug):
-            print ("Using local tag-csv-cache: " + tagfile)
-        csvfile = open(tagfile, "r")
+    if (debug):
+        print ("Using local tag-csv-cache: " + tagfile)
+    csvfile = open(tagfile, "r")
     my_tags ={}
     # with open( tagfile ) as csvfile:
+    if (debug):
+        print ("Parsin tagilistaa CSV:sta")
     csvreader = csv.reader( csvfile, delimiter=',' )
     for row in csvreader:
         if (debug):
