@@ -70,7 +70,7 @@ if "HTTP_USER_AGENT" in os.environ:
     # Lets prepare to read GET-variables
     form = cgi.FieldStorage()
     # Let's use current date if not given on url
-    #date = form.getvalue('date', datetime.now().strftime('%Y%m%d'))
+    current_time=datetime.now().strftime('+%F %T')
     date = form.getvalue('date', '20190602')
     mode = form.getvalue('mode', 'laptime')
     numlaps = int(form.getvalue('laps', 0))
@@ -330,6 +330,7 @@ else:
     
 if (use_cgi):
     print ("<br>\n<hr>\n<a href=\"tulokset-" + date + ".html\">Valmiit tulokset</a>")
+    double_print (FH, "<P><I>Last updated: " + current_time + "</I></P>")
     double_print (FH, "</html>")
     FH.close()
 #print (type(parsed['tag_reads']))
