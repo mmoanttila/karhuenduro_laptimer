@@ -52,8 +52,9 @@ if "HTTP_USER_AGENT" in os.environ:
     print
     print '<html>'
     print '<head>'
-    print '<title>Kierrosajat</title>'
-    print '<meta charset="UTF-8">'
+    print '  <title>Kierrosajat</title>'
+    print '  <meta charset="UTF-8">'
+    print '  <meta http-equiv="refresh" content="300">'
     print '</head>'
     print '<style>'
     print '  table {border-collapse: collapse;}'
