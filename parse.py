@@ -19,6 +19,7 @@ endports = [2, 4]
 log_url = "https://www.karhuenduro.fi/ajanotto/"
 csv_url = "https://docs.google.com/spreadsheets/d/1dtqQQ6azJ5J0VBEHnnKLAkp3SlUK_6OzSk2RQivY6L0/export?format=csv&id=1dtqQQ6azJ5J0VBEHnnKLAkp3SlUK_6OzSk2RQivY6L0&gid=0"
 tag_filter = "^BAD0...."
+log_dir = "/web/ajanotto/"
 
 # End of settings
 
@@ -99,16 +100,26 @@ else:
         print ("Mode: " + mode)
     race_end = int( time.mktime( time.strptime( date + " " + os.getenv('end','23:59'), "%Y%m%d %H:%M")) ) * 1000000
 
-try:
-    if (debug):
-        print ("Generating url = " + log_url + date + ".txt")
-    url = log_url + date + ".txt"
-    contents = urllib2.urlopen( url )
-    if (debug):
-        print ("Logfile last modified :" + contents.headers['last-modified'] )
-except IOError:
-    print ("URLia ", url, " ei onnistuttu resolvoimaan!")
-    print ("Tai sitten osoite ei vaan vastaa!")
+#try:
+#    if (debug):
+#        print ("Generating url = " + log_url + date + ".txt")
+#    url = log_url + date + ".txt"
+#    contents = urllib2.urlopen( url )
+#    if (debug):
+#        print ("Logfile last modified :" + contents.headers['last-modified'] )
+#except IOError:
+#    print ("URLia ", url, " ei onnistuttu resolvoimaan!")
+#    print ("Tai sitten osoite ei vaan vastaa!")
+
+logfile = log_dir + date + ".txt"
+if (debug):
+    print ("parsing logfile = " + log_dir + date + ".txt")
+
+if (os.path.exists(logfile)):
+    contents = open (logfile, "r")
+else:
+    print ("Couldn't open logfile: " + logfile)
+    exit
 
 if (debug):
     print (contents.info())
