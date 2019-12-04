@@ -295,8 +295,8 @@ if (debug):
 
 if (use_cgi):
     print "</pre>"
-    #FH = open ("tulokset-" + date + ".html", "w")
-    FH = open ("tulokset-debug.html", "w")
+    FH = open ("tulokset-" + date + ".html", "w")
+    #FH = open ("tulokset-debug.html", "w")
     FH.write("<html><head>\n<title>Tulokset " + date + "</title>\n<meta charset=\"UTF-8\">\n</head>\n<body>\n")
     double_print (FH, "<h2>Tulokset " + date[6:8] + "." + date[4:6] + "." + date[0:4] + "</h2>")
     double_print (FH, "<table border=\"1\">")
