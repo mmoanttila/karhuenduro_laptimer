@@ -19,7 +19,8 @@ endports = [2, 4]
 log_url = "https://www.karhuenduro.fi/ajanotto/"
 csv_url = "https://docs.google.com/spreadsheets/d/1dtqQQ6azJ5J0VBEHnnKLAkp3SlUK_6OzSk2RQivY6L0/export?format=csv&id=1dtqQQ6azJ5J0VBEHnnKLAkp3SlUK_6OzSk2RQivY6L0&gid=0"
 tag_filter = "^BAD0...."
-log_dir = "/web/ajanotto/"
+log_dir = "../web/ajanotto/"
+output_dir = "../web/tulokset/"
 
 # End of settings
 
@@ -306,7 +307,7 @@ if (debug):
 
 if (use_cgi):
     print "</pre>"
-    FH = open ("tulokset-" + date + ".html", "w")
+    FH = open (output_dir + "tulokset-" + date + ".html", "w")
     #FH = open ("tulokset-debug.html", "w")
     FH.write("<html><head>\n<title>Tulokset " + date + "</title>\n<meta charset=\"UTF-8\">\n</head>\n<body>\n")
     double_print (FH, "<h2>Tulokset " + date[6:8] + "." + date[4:6] + "." + date[0:4] + "</h2>")
@@ -341,7 +342,7 @@ else:
             print "    ", print_laptime( laptimes[epc][col] )[:-3], "secs"
     
 if (use_cgi):
-    print ("<br>\n<hr>\n<a href=\"tulokset-" + date + ".html\">Valmiit tulokset</a>")
+    print ("<br>\n<hr>\n<a href=\"/tulokset/tulokset-" + date + ".html\">Valmiit tulokset</a>")
     double_print (FH, "<P><I>Last updated: " + current_time + "</I></P>")
     double_print (FH, "</html>")
     FH.close()
