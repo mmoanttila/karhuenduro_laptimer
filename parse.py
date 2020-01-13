@@ -313,7 +313,7 @@ for epc, times in laptimes.iteritems():
     else:
         results.append ( (epc, len(times)-offset, sum(times[offset:]) ) ) # List of tuples (epc, laps, total)
     if (debug):
-        print (epc + ": laps=" + str(len (times)) + " total=" + str(sum(times)) )
+        print (epc + ": laps=" + str(len (times)-offset) + " total=" + str(sum(times)) )
 
 # results =: list of:
 #   epc, no_laps, kokonaisaika
