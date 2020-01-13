@@ -238,8 +238,9 @@ for line in contents:
         if (debug):
             print ("Loysin json:ia rivilta:", parsed)
     except ValueError:
-        print ("Rivilta: ", jsonline[2])
-        print ("ei onnistuttu parsimaan json:ia.")
+        if (debug):
+            print ("Rivilta: ", line, "\n")
+            print ("ei onnistuttu parsimaan json:ia.")
     # Skip heartbeats
     if ( not parsed['tag_reads'][0]['isHeartBeat'] ):
         # We might have several tagreads per line
