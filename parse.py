@@ -34,6 +34,9 @@ output_dir = "../web/tulokset/"
 #   laptime2: yhdella lukijalla, mutta ekakierros alkaa kellon mukaan (starttime)
 #   stage: kaksi lukijaa ja kierrosaika lasketaan aina edelliseen ykkosleimaukseen verrattuna
 
+# offset = 0 
+#   montako kierrosta alusta jatetaan laskematta
+
 # dict contains lists of timestamps indexed by epc
 starttimes = defaultdict(list)
 endtimes = defaultdict(list)
@@ -77,6 +80,7 @@ if "HTTP_USER_AGENT" in os.environ:
     date = form.getvalue('date', '20190602')
     mode = form.getvalue('mode', 'laptime')
     numlaps = int(form.getvalue('laps', 0))
+    offset = int(form.getvalue('offset', 0))
 
     if ( '-' in date ):
         date = date.replace("-","")
@@ -287,9 +291,9 @@ for epc, times in laptimes.iteritems():
     if (mode == 'stage' and numlaps <> 0 and len(times) > numlaps):
         if (debug):
             print ("Tagilla " + epc + " on ylimaaraisia kierroksia " + str(len(times)) )
-        results.append ( (epc, numlaps, sum(times[:numlaps]) ) ) # Vain ekat numlaps kierrosta vaikuttavat tuloksiin
+        results.append ( (epc, numlaps, sum(times[offset:numlaps]) ) ) # Vain ekat numlaps kierrosta vaikuttavat tuloksiin
     else:
-        results.append ( (epc, len(times), sum(times) ) ) # List of tuples (epc, laps, total)
+        results.append ( (epc, len(times), sum(times[offset:]) ) ) # List of tuples (epc, laps, total)
     if (debug):
         print (epc + ": laps=" + str(len (times)) + " total=" + str(sum(times)) )
 
