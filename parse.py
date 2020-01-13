@@ -91,6 +91,8 @@ if "HTTP_USER_AGENT" in os.environ:
     if (debug):
         print ("Kaytetty date: " + date)
         print ("Laskentatapa: " + mode)
+        print ("Kierrosmaara: " + str(numlaps))
+        print ("Lampparit: " + str(offset))
     race_start = int( time.mktime( time.strptime( date + " " + form.getvalue('start','10:00'), "%Y%m%d %H:%M")) ) * 1000000
     race_end = int( time.mktime( time.strptime( date + " " + form.getvalue('end','23:59'), "%Y%m%d %H:%M")) ) * 1000000
 else:
@@ -100,11 +102,13 @@ else:
     mode = os.getenv('mode', 'laptime')
     race_start = int( time.mktime( time.strptime( date + " " + os.getenv('start','10:00'), "%Y%m%d %H:%M")) ) * 1000000
     numlaps = int(os.getenv('laps', 0))
+    offset = int(os.getenv('offset', 0))
     if (debug): 
         print ("Converting :" + date + " " + os.getenv('start','10:00') + " as %Y%m%d %H:%M")
         print ("Race start time: " + str(race_start))
         print ("Mode: " + mode)
         print ("Numlaps: " + str(numlaps))
+        print ("Offset: " + str(offset))
     race_end = int( time.mktime( time.strptime( date + " " + os.getenv('end','23:59'), "%Y%m%d %H:%M")) ) * 1000000
 
 #try:
