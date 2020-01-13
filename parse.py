@@ -333,7 +333,7 @@ if (use_cgi):
         FH = open (output_dir + "tulokset-" + date + ".html", "w")
         #FH = open ("tulokset-debug.html", "w")
         FH.write("<html><head>\n<title>Tulokset " + date + "</title>\n<meta charset=\"UTF-8\">\n</head>\n<body>\n")
-        FH.write("<-- tulokset.py&date=" + date + "&start=" + time.strftime( '%H:%M', time.localtime(race_start/1000000)) + "&mode=" + mode + "&laps=" + numlaps + "&offset=" + offset + "-->")
+        FH.write("<-- tulokset.py&date=" + date + "&start=" + time.strftime( '%H:%M', time.localtime(race_start/1000000)) + "&mode=" + mode + "&laps=" + str(numlaps) + "&offset=" + str(offset) + "-->")
     except IOError:
         FH = False
     double_print (FH, "<h2>Tulokset " + date[6:8] + "." + date[4:6] + "." + date[0:4] + "</h2>")
