@@ -302,10 +302,10 @@ for line in contents:
 # Yritetaan laskea vahan statistiikkaa tuloksista.
 for epc, times in laptimes.iteritems():
     # Jos patka-ajat ja number of laps given
-    if (numlaps <> 0 and len(times) > numlaps):
+    if (numlaps <> 0 and len(times) > numlaps+offset):
         if (debug):
             print ("Tagilla " + epc + " on ylimaaraisia kierroksia " + str(len(times)) )
-        results.append ( (epc, numlaps, sum(times[offset:numlaps]) ) ) # Vain ekat numlaps kierrosta vaikuttavat tuloksiin
+        results.append ( (epc, numlaps, sum(times[offset:(numlaps+offset)]) ) ) # Vain ekat numlaps kierrosta vaikuttavat tuloksiin
     else:
         results.append ( (epc, len(times), sum(times[offset:]) ) ) # List of tuples (epc, laps, total)
     if (debug):
