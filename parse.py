@@ -100,7 +100,7 @@ else:
         print ("Converting :" + date + " " + os.getenv('start','10:00') + " as %Y%m%d %H:%M")
         print ("Race start time: " + str(race_start))
         print ("Mode: " + mode)
-        print ("Numlaps: " + numlaps)
+        print ("Numlaps: " + str(numlaps))
     race_end = int( time.mktime( time.strptime( date + " " + os.getenv('end','23:59'), "%Y%m%d %H:%M")) ) * 1000000
 
 #try:
