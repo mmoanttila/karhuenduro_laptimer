@@ -95,10 +95,12 @@ else:
     date = os.getenv('date', '20190602')
     mode = os.getenv('mode', 'laptime')
     race_start = int( time.mktime( time.strptime( date + " " + os.getenv('start','10:00'), "%Y%m%d %H:%M")) ) * 1000000
+    numlaps = int(os.getenv('laps', 0))
     if (debug): 
         print ("Converting :" + date + " " + os.getenv('start','10:00') + " as %Y%m%d %H:%M")
         print ("Race start time: " + str(race_start))
         print ("Mode: " + mode)
+        print ("Numlaps: " + numlaps)
     race_end = int( time.mktime( time.strptime( date + " " + os.getenv('end','23:59'), "%Y%m%d %H:%M")) ) * 1000000
 
 #try:
@@ -120,7 +122,14 @@ if (os.path.exists(logfile)):
     contents = open (logfile, "r")
 else:
     print ("Couldn't open logfile: " + logfile)
-    exit
+    try:
+        if (debug):
+            print ("Generating url = " + log_url + date + ".txt")
+        url = log_url + date + ".txt"
+        contents = urllib2.urlopen( url )
+    except IOError:
+        print ("Ei saatu avattu timestamppeja, lopetetaan")
+        sys.exit(99)
 
 if (debug):
     print (contents.info())
