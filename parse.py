@@ -342,7 +342,7 @@ if (use_cgi):
         double_print (FH, "  </tr>")
         double_print (FH, "  <tr>")
         my_number=my_number+1
-        for col in range(0,len(laptimes[epc])):
+        for col in range(offset,len(laptimes[epc])):
             if ( (col == len(laptimes[epc])-1 ) ):
                 double_print (FH, "    <td class=\"laptime\" colspan=\"" + str(maxlaps-col) + "\">" + print_laptime( laptimes[epc][col] )[:-3] + "</td>")
             else: 
@@ -359,7 +359,7 @@ else:
         print (str(my_number) + ". ")
         my_number=my_number+1
         print (print_tag(epc) + ": " + str(mylaps) + " kierrosta Total: " + print_laptime( mytotal )[:-3])
-        for col in range(0,len(laptimes[epc])):
+        for col in range(offset,len(laptimes[epc])):
             print "    ", print_laptime( laptimes[epc][col] )[:-3], "secs"
     
 if (use_cgi):
