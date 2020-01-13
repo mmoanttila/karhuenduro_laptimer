@@ -306,8 +306,12 @@ for epc, times in laptimes.iteritems():
         if (debug):
             print ("Tagilla " + epc + " on ylimaaraisia kierroksia " + str(len(times)) )
         results.append ( (epc, numlaps, sum(times[offset:(numlaps+offset)]) ) ) # Vain ekat numlaps kierrosta vaikuttavat tuloksiin
+    elif ( (len(times) - offset) < 1 ):
+        if (debug):
+            print ("Tagilla " + epc + " on pelkka lammittelykierros.")
+        results.append ( (epc, 0, sum(times[offset:]) ) ) # List of tuples (epc, laps, total)
     else:
-        results.append ( (epc, len(times), sum(times[offset:]) ) ) # List of tuples (epc, laps, total)
+        results.append ( (epc, len(times)-offset, sum(times[offset:]) ) ) # List of tuples (epc, laps, total)
     if (debug):
         print (epc + ": laps=" + str(len (times)) + " total=" + str(sum(times)) )
 
