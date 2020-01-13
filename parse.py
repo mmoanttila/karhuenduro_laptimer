@@ -218,7 +218,8 @@ def newtime_to_ctime (utime):
 
 def double_print (FO, line):
     print (line)
-    FO.write (line + "\n")
+    if ( FO ):
+        FO.write (line + "\n")
 
 tags = read_tags( 'tags.csv')
 
@@ -324,9 +325,12 @@ if (debug):
 
 if (use_cgi):
     print "</pre>"
-    FH = open (output_dir + "tulokset-" + date + ".html", "w")
-    #FH = open ("tulokset-debug.html", "w")
-    FH.write("<html><head>\n<title>Tulokset " + date + "</title>\n<meta charset=\"UTF-8\">\n</head>\n<body>\n")
+    try: 
+        FH = open (output_dir + "tulokset-" + date + ".html", "w")
+        #FH = open ("tulokset-debug.html", "w")
+        FH.write("<html><head>\n<title>Tulokset " + date + "</title>\n<meta charset=\"UTF-8\">\n</head>\n<body>\n")
+    except IOError:
+        FH = False
     double_print (FH, "<h2>Tulokset " + date[6:8] + "." + date[4:6] + "." + date[0:4] + "</h2>")
     double_print (FH, "<table border=\"1\">")
     my_number=1
@@ -362,7 +366,8 @@ if (use_cgi):
     print ("<br>\n<hr>\n<a href=\"/tulokset/tulokset-" + date + ".html\">Valmiit tulokset</a>")
     double_print (FH, "<P><I>Last updated: " + current_time + "</I></P>")
     double_print (FH, "</html>")
-    FH.close()
+    if (FH):
+        FH.close()
 #print (type(parsed['tag_reads']))
 #with open('log.txt') as f:
 #    data = json.load(f)
