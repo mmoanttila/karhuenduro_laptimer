@@ -26,18 +26,22 @@ output_file_name = ""
 
 # End of settings
 
-# Parameters:
-#
-# date esim. 2019-10-01
-#   pvm, jonka lokia parsitaan (mm. tiedostonnimi)
-# mode = <laptime|>
-#   tapa jolla kierros- tai patka-ajat lasketaan:
-#   laptime: yksi lukija kaytossa ja kierros lasketaan aina edelliseen leimaukseen verrattuna
-#   laptime2: yhdella lukijalla, mutta ekakierros alkaa kellon mukaan (starttime)
-#   stage: kaksi lukijaa ja kierrosaika lasketaan aina edelliseen ykkosleimaukseen verrattuna
+""" Parameters:
 
-# offset = 0 
-#   montako kierrosta alusta jatetaan laskematta
+date esim. 2019-10-01
+    pvm, jonka lokia parsitaan (mm. tiedostonnimi 2019-10-01.cvs)
+
+mode = <laptime|>
+    tapa jolla kierros- tai patka-ajat lasketaan:
+    laptime: yksi lukija kaytossa ja kierros lasketaan aina edelliseen leimaukseen verrattuna
+    laptime2: yhdella lukijalla, mutta ekakierros alkaa kellon mukaan (starttime)
+    stage: kaksi lukijaa ja kierrosaika lasketaan aina edelliseen ykkosleimaukseen verrattuna
+
+laps = 0
+    montako kierrosta lasketaan mukaan totaliin (loputkin naytetaan)
+offset = 0 
+    montako kierrosta alusta jatetaan laskematta (esim. lamppari)
+""" 
 
 # dict contains lists of timestamps indexed by epc
 starttimes = defaultdict(list)
@@ -152,10 +156,10 @@ if (debug):
 if (os.path.exists(logfile)):
     contents = open (logfile, "r")
 else:
-    print ("Couldn't open logfile: " + logfile)
+    if (debug):
+        print ("Couldn't open logfile: " + logfile)
+        print ("Trying load logfile from " + log_url + date + ".txt")
     try:
-        if (debug):
-            print ("Generating url = " + log_url + date + ".txt")
         url = log_url + date + ".txt"
         contents = urllib2.urlopen( url )
     except IOError:
@@ -215,12 +219,15 @@ def read_tags (tagfile):
         print ("Parsin tagilistaa CSV:sta")
     csvreader = csv.reader( csvfile, delimiter=',' )
     for row in csvreader:
+        """We don't propably need this debug any more
         if (debug):
             print "Luin tagin: " + row[2] + " = " + row[1]
+        """
         my_tags[row[2]] = row[1] + " | " + row[0]
     return my_tags
 
 def print_tag (tag):
+    """Resolv epc-tag to username."""
     if tags.has_key (tag):
         return tags[tag]
     else:
@@ -230,6 +237,7 @@ def time_to_localtime (utime):
     return (time.strftime( '%H:%M:%S', time.localtime(utime/1000000)))
 
 def time_to_localtime_debug (utime):
+    """We needed to see if timestamp is really on correct date&time."""
     return (time.strftime( '%F %H:%M:%S', time.localtime(utime/1000000)))
 
 def newtime_to_ctime (utime):
