@@ -91,6 +91,8 @@ if "HTTP_USER_AGENT" in os.environ:
     if (debug):
         print ("Kaytetty date: " + date)
         print ("Laskentatapa: " + mode)
+        print ("Kierrosmaara: " + str(numlaps))
+        print ("Lampparit: " + str(offset))
     race_start = int( time.mktime( time.strptime( date + " " + form.getvalue('start','10:00'), "%Y%m%d %H:%M")) ) * 1000000
     race_end = int( time.mktime( time.strptime( date + " " + form.getvalue('end','23:59'), "%Y%m%d %H:%M")) ) * 1000000
 else:
@@ -99,10 +101,14 @@ else:
     date = os.getenv('date', '20190602')
     mode = os.getenv('mode', 'laptime')
     race_start = int( time.mktime( time.strptime( date + " " + os.getenv('start','10:00'), "%Y%m%d %H:%M")) ) * 1000000
+    numlaps = int(os.getenv('laps', 0))
+    offset = int(os.getenv('offset', 0))
     if (debug): 
         print ("Converting :" + date + " " + os.getenv('start','10:00') + " as %Y%m%d %H:%M")
         print ("Race start time: " + str(race_start))
         print ("Mode: " + mode)
+        print ("Numlaps: " + str(numlaps))
+        print ("Offset: " + str(offset))
     race_end = int( time.mktime( time.strptime( date + " " + os.getenv('end','23:59'), "%Y%m%d %H:%M")) ) * 1000000
 
 #try:
@@ -124,7 +130,14 @@ if (os.path.exists(logfile)):
     contents = open (logfile, "r")
 else:
     print ("Couldn't open logfile: " + logfile)
-    exit
+    try:
+        if (debug):
+            print ("Generating url = " + log_url + date + ".txt")
+        url = log_url + date + ".txt"
+        contents = urllib2.urlopen( url )
+    except IOError:
+        print ("Ei saatu avattu timestamppeja, lopetetaan")
+        sys.exit(99)
 
 if (debug):
     print (contents.info())
@@ -205,7 +218,8 @@ def newtime_to_ctime (utime):
 
 def double_print (FO, line):
     print (line)
-    FO.write (line + "\n")
+    if ( FO ):
+        FO.write (line + "\n")
 
 tags = read_tags( 'tags.csv')
 
@@ -288,14 +302,18 @@ for line in contents:
 # Yritetaan laskea vahan statistiikkaa tuloksista.
 for epc, times in laptimes.iteritems():
     # Jos patka-ajat ja number of laps given
-    if (mode == 'stage' and numlaps <> 0 and len(times) > numlaps):
+    if (numlaps <> 0 and len(times) > numlaps+offset):
         if (debug):
             print ("Tagilla " + epc + " on ylimaaraisia kierroksia " + str(len(times)) )
-        results.append ( (epc, numlaps, sum(times[offset:numlaps]) ) ) # Vain ekat numlaps kierrosta vaikuttavat tuloksiin
+        results.append ( (epc, numlaps, sum(times[offset:(numlaps+offset)]) ) ) # Vain ekat numlaps kierrosta vaikuttavat tuloksiin
+    elif ( (len(times) - offset) < 1 ):
+        if (debug):
+            print ("Tagilla " + epc + " on pelkka lammittelykierros.")
+        results.append ( (epc, 0, sum(times[offset:]) ) ) # List of tuples (epc, laps, total)
     else:
-        results.append ( (epc, len(times), sum(times[offset:]) ) ) # List of tuples (epc, laps, total)
+        results.append ( (epc, len(times)-offset, sum(times[offset:]) ) ) # List of tuples (epc, laps, total)
     if (debug):
-        print (epc + ": laps=" + str(len (times)) + " total=" + str(sum(times)) )
+        print (epc + ": laps=" + str(len (times)-offset) + " total=" + str(sum(times)) )
 
 # results =: list of:
 #   epc, no_laps, kokonaisaika
@@ -311,9 +329,12 @@ if (debug):
 
 if (use_cgi):
     print "</pre>"
-    FH = open (output_dir + "tulokset-" + date + ".html", "w")
-    #FH = open ("tulokset-debug.html", "w")
-    FH.write("<html><head>\n<title>Tulokset " + date + "</title>\n<meta charset=\"UTF-8\">\n</head>\n<body>\n")
+    try: 
+        FH = open (output_dir + "tulokset-" + date + ".html", "w")
+        #FH = open ("tulokset-debug.html", "w")
+        FH.write("<html><head>\n<title>Tulokset " + date + "</title>\n<meta charset=\"UTF-8\">\n</head>\n<body>\n")
+    except IOError:
+        FH = False
     double_print (FH, "<h2>Tulokset " + date[6:8] + "." + date[4:6] + "." + date[0:4] + "</h2>")
     double_print (FH, "<table border=\"1\">")
     my_number=1
@@ -325,7 +346,7 @@ if (use_cgi):
         double_print (FH, "  </tr>")
         double_print (FH, "  <tr>")
         my_number=my_number+1
-        for col in range(0,len(laptimes[epc])):
+        for col in range(offset,len(laptimes[epc])):
             if ( (col == len(laptimes[epc])-1 ) ):
                 double_print (FH, "    <td class=\"laptime\" colspan=\"" + str(maxlaps-col) + "\">" + print_laptime( laptimes[epc][col] )[:-3] + "</td>")
             else: 
@@ -342,14 +363,15 @@ else:
         print (str(my_number) + ". ")
         my_number=my_number+1
         print (print_tag(epc) + ": " + str(mylaps) + " kierrosta Total: " + print_laptime( mytotal )[:-3])
-        for col in range(0,len(laptimes[epc])):
+        for col in range(offset,len(laptimes[epc])):
             print "    ", print_laptime( laptimes[epc][col] )[:-3], "secs"
     
 if (use_cgi):
     print ("<br>\n<hr>\n<a href=\"/tulokset/tulokset-" + date + ".html\">Valmiit tulokset</a>")
     double_print (FH, "<P><I>Last updated: " + current_time + "</I></P>")
     double_print (FH, "</html>")
-    FH.close()
+    if (FH):
+        FH.close()
 #print (type(parsed['tag_reads']))
 #with open('log.txt') as f:
 #    data = json.load(f)
