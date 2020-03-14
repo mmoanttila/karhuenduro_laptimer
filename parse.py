@@ -336,7 +336,7 @@ if (use_cgi):
     print "</pre>"
     try: 
         #FH = open (output_dir + "tulokset-" + date + ".html", "w")
-        FH = open (output_dir + "tulokset-debug.html", "w")
+        FH = open ("tulokset-debug.html", "w")
         FH.write("<html><head>\n<title>Tulokset " + date + "</title>\n<meta charset=\"UTF-8\">\n</head>\n<body>\n")
         FH.write("<!-- tulokset.py&date=" + date + "&start=" + time.strftime( '%H:%M', time.localtime(race_start/1000000)) + "&mode=" + mode + "&laps=" + str(numlaps) + "&offset=" + str(offset) + "-->")
     except IOError:
