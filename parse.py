@@ -241,64 +241,68 @@ for line in contents:
         if (debug):
             print ("Rivilta: ", line, "\n")
             print ("ei onnistuttu parsimaan json:ia.")
-    # Skip heartbeats
-    if ( not parsed['tag_reads'][0]['isHeartBeat'] ):
-        # We might have several tagreads per line
-        # That's why we loop
-        for read in parsed['tag_reads']:
-            if (debug):
-                print ("Parsin EPC:ta: ", read)
-            epc = unicodedata.normalize('NFKD', read['epc']).encode('ascii','ignore')
-            allowed_tag = re.search(tag_filter, epc)
-            if (not allowed_tag):
-                if (debug):
-                    print (epc, " ei ole meidan tagi.")
-                continue
-            if (debug):
-                print ("Loysin EPC:n ", epc)
-                print ("Testaan onko ", read['antennaPort'], " in ", startports)
-                print ("  ja onko ", read['firstSeenTimestamp'], "(", time_to_localtime_debug(read['firstSeenTimestamp']), ") >", race_start, " (", time_to_localtime_debug(race_start), ")" )
-                print ("  ja onko ", read['firstSeenTimestamp'], "(", time_to_localtime_debug(read['firstSeenTimestamp']), ") <", race_end, " (", time_to_localtime_debug(race_end), ")" )
-            if (read['antennaPort'] in startports and read['firstSeenTimestamp'] > race_start and read['firstSeenTimestamp'] < race_end):
-                # If starting with starttime (mode=laptime2), we should add one timestamp for that
-                if ( mode == 'laptime2' and len (starttimes[epc]) == 0 ):
-                    if (debug):
-                        print ("Lisataan lahtoleima := start_time ", time_to_localtime_debug(race_start) )
-                    starttimes[epc].append(race_start)
 
+    # We might have several tagreads per line
+    # That's why we loop
+    for read in parsed['tag_reads']:
+        if (debug):
+            print ("Parsin leimausta:ta: ", read)
+        # Skip heartbeats
+        if (read['isHeartBeat']):
+            if (debug):
+                print ("Skippaan HeartBeatin.")
+            continue
+        epc = unicodedata.normalize('NFKD', read['epc']).encode('ascii','ignore')
+        allowed_tag = re.search(tag_filter, epc)
+        if (not allowed_tag):
+            if (debug):
+                print (epc, " ei ole meidan tagi.")
+            continue
+        if (debug):
+            print ("Loysin EPC:n ", epc)
+            print ("Testaan onko ", read['antennaPort'], " in ", startports)
+            print ("  ja onko ", read['firstSeenTimestamp'], "(", time_to_localtime_debug(read['firstSeenTimestamp']), ") >", race_start, " (", time_to_localtime_debug(race_start), ")" )
+            print ("  ja onko ", read['firstSeenTimestamp'], "(", time_to_localtime_debug(read['firstSeenTimestamp']), ") <", race_end, " (", time_to_localtime_debug(race_end), ")" )
+        if (read['antennaPort'] in startports and read['firstSeenTimestamp'] > race_start and read['firstSeenTimestamp'] < race_end):
+            # If starting with starttime (mode=laptime2), we should add one timestamp for that
+            if ( mode == 'laptime2' and len (starttimes[epc]) == 0 ):
                 if (debug):
-                    print ("Lahto: ", epc, " ", time_to_localtime(read['firstSeenTimestamp']) )
-                starttimes[epc].append(read['firstSeenTimestamp'])
-                # We try to figure if we have end-tags at all
-                if ( len(starttimes[epc]) > 1 and len(endtimes[epc]) == 0):
-                    if (debug):
-                        print ("Laptime for ", epc, " : ", (read['firstSeenTimestamp'] - starttimes[epc][-2])/1000000, " secs") 
-                    laptimes[epc].append(read['firstSeenTimestamp'] - starttimes[epc][-2]) 
-                    if (len (laptimes[epc])) > maxlaps:
-                        maxlaps += 1
+                    print ("Lisataan lahtoleima := start_time ", time_to_localtime_debug(race_start) )
+                starttimes[epc].append(race_start)
 
-            elif (read['antennaPort'] in endports ):
+            if (debug):
+                print ("Lahto: ", epc, " ", time_to_localtime(read['firstSeenTimestamp']) )
+            starttimes[epc].append(read['firstSeenTimestamp'])
+            # We try to figure if we have end-tags at all
+            if ( len(starttimes[epc]) > 1 and len(endtimes[epc]) == 0):
                 if (debug):
-                    print ("Maali: ", epc, " ", time_to_localtime(read['firstSeenTimestamp']) )
-                    # print ("Maali: ", read['epc'], " ", newtime_to_ctime(read['firstSeenTimestamp']) )
-                endtimes[epc].append(read['firstSeenTimestamp'])
-                # Find last start-timestamp for current epc to calculate laptime
-                #pprint (read['firstSeenTimestamp'])
-                #pprint (starttimes[read['epc']][-1])
-                # Assuming last starttime is for current leg
-                try:
-                    if (debug):
-                        print ("Laptime for ", epc, " : ", (read['firstSeenTimestamp'] - starttimes[epc][-1])/1000000, " secs") 
-                    laptimes[epc].append(read['firstSeenTimestamp']-starttimes[epc].pop() )
-                except IndexError:
-                    if (debug):
-                        print ("Loytyi ylimaarainen maalileimaus: ", time_to_localtime(read['firstSeenTimestamp']) )
-                    continue
+                    print ("Laptime for ", epc, " : ", (read['firstSeenTimestamp'] - starttimes[epc][-2])/1000000, " secs") 
+                laptimes[epc].append(read['firstSeenTimestamp'] - starttimes[epc][-2]) 
                 if (len (laptimes[epc])) > maxlaps:
                     maxlaps += 1
-            else:
+
+        elif (read['antennaPort'] in endports ):
+            if (debug):
+                print ("Maali: ", epc, " ", time_to_localtime(read['firstSeenTimestamp']) )
+                # print ("Maali: ", read['epc'], " ", newtime_to_ctime(read['firstSeenTimestamp']) )
+            endtimes[epc].append(read['firstSeenTimestamp'])
+            # Find last start-timestamp for current epc to calculate laptime
+            #pprint (read['firstSeenTimestamp'])
+            #pprint (starttimes[read['epc']][-1])
+            # Assuming last starttime is for current leg
+            try:
                 if (debug):
-                    print ("Ei huomioitavaa rivilla")
+                    print ("Laptime for ", epc, " : ", (read['firstSeenTimestamp'] - starttimes[epc][-1])/1000000, " secs") 
+                laptimes[epc].append(read['firstSeenTimestamp']-starttimes[epc].pop() )
+            except IndexError:
+                if (debug):
+                    print ("Loytyi ylimaarainen maalileimaus: ", time_to_localtime(read['firstSeenTimestamp']) )
+                continue
+            if (len (laptimes[epc])) > maxlaps:
+                maxlaps += 1
+        else:
+            if (debug):
+                print ("Ei huomioitavaa rivilla")
 
 # Yritetaan laskea vahan statistiikkaa tuloksista.
 for epc, times in laptimes.iteritems():
