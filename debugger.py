@@ -90,6 +90,7 @@ def parse_line(line):
             continue
         entry['epc'] = unicodedata.normalize('NFKD', entry['epc']).encode('ascii','ignore')
         entry['firstSeenTimestamp'] = time_to_localtime (entry['firstSeenTimestamp'])
+        entry['id'] = len (reads)
         if (debug):
             print ("Löysin leimauksen :")
             pprint (entry)
