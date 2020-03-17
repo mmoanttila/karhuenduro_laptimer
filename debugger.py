@@ -124,4 +124,5 @@ if (os.path.exists(logfile)):
     with open(logfile, 'r') as contents:
         for line in contents:
             parse_line(line)
+    print (json.dumps(reads)) 
 
