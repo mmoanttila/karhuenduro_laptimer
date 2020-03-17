@@ -15,6 +15,8 @@ import time
 import unicodedata
 
 log_dir = "../web/ajanotto/"
+tagfile = "tags.csv"
+
 # This will contain all read timestamps
 reads = list()
 
@@ -48,15 +50,21 @@ def table_start():
 
 def table_row(entry):
     print ("  <tr>")
-    print ("    <td>" + entry['antennaPort'] + "</td>")
-    print ("    <td>" + entry['epc'] + "</td>")
-    print ("    <td>" + entry['firstSeenTimestamp'] + "</td>")
-    print ("    <td>" + entry['peakRssi'] + "</td>")
+    print ("    <td>" + str(entry['antennaPort']) + "</td>")
+    print ("    <td>" + entry['tag'] + "</td>")
+    print ("    <td>" + str(entry['localtime']) + "</td>")
+    print ("    <td>" + str(entry['peakRssi']) + "</td>")
     print ("  </tr>")
 
-def table_end():
+def table_stop():
     print ("</table")
 
+def print_html_table(data):
+    table_start()
+    for row in data:
+        table_row(row)
+    table_stop
+ 
 # {u'antennaPort': 2,
 #   u'epc': u'BAD00058',
 #   u'firstSeenTimestamp': 1584178803057737,
@@ -65,6 +73,20 @@ def table_end():
 # }
 def time_to_localtime (utime):
     return (time.strftime( '%H:%M:%S', time.localtime(utime/1000000)))
+
+def read_tags():
+    my_tags = {}
+    with open( tagfile ) as csvfile:
+        csvreader = csv.reader( csvfile, delimiter=',' )
+        for row in csvreader:
+            my_tags[row[2]] = row[1] 
+    return my_tags
+
+def print_tag (tag):
+    if tags.has_key (tag):
+        return tags[tag]
+    else:
+        return tag
 
 def parse_line(line):
     # First let's skip logfile timestamp
@@ -89,7 +111,8 @@ def parse_line(line):
                 print ("Skippaan HeartBeatin.")
             continue
         entry['epc'] = unicodedata.normalize('NFKD', entry['epc']).encode('ascii','ignore')
-        entry['firstSeenTimestamp'] = time_to_localtime (entry['firstSeenTimestamp'])
+        entry['tag'] = print_tag(entry['epc'])
+        entry['localtime'] = time_to_localtime (entry['firstSeenTimestamp'])
         entry['id'] = len (reads)
         if (debug):
             print ("Löysin leimauksen :")
@@ -99,6 +122,13 @@ def parse_line(line):
 def print_line(line):
     pprint (line)
 
+def write_csv (data):
+    with open("debug.csv", "wb") as debug:
+        csvwriter = csv.writer(debug, delimiter=',', quoting=csv.QUOTE_MINIMAL)
+        for line in data:
+            row = line['id'], line['tag'], line['localtime'], line['antennaPort']
+            csvwriter.writerow(row)
+
 # check for debug cmd parameter
 if ( len(sys.argv) > 1 and '-d' in sys.argv ):
     print "Debugging Enabled!"
@@ -107,12 +137,12 @@ else:
     debug = False
 
 #cgitb.enable()
-#form = cgi.FieldStorage()
+form = cgi.FieldStorage()
 
 # Let's use current date if not given on url
 current_date=datetime.now().strftime('+%Y%m%d')
-#date = form.getvalue('date', current_date)
-date = os.getenv('date', current_date)
+date = form.getvalue('date', current_date)
+#date = os.getenv('date', current_date)
 logfile = log_dir + date + '.txt'
 
 if (debug):
@@ -121,8 +151,13 @@ if (debug):
 if (os.path.exists(logfile)):
     if (debug):
         print ("Loysin logfilen: ", logfile)
+    tags = read_tags()
     with open(logfile, 'r') as contents:
         for line in contents:
             parse_line(line)
-    print (json.dumps(reads)) 
+    #write_csv(reads)
+    html_header()
+    print_html_table(reads)
+    html_footer()
+    #    print (json.dumps(reads)) 
 
