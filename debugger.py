@@ -11,6 +11,7 @@ import os, sys
 from datetime import timedelta, datetime
 from pprint import pprint
 import json
+import time
 import unicodedata
 
 log_dir = "../web/ajanotto/"
@@ -62,6 +63,8 @@ def table_end():
 #   u'isHeartBeat': False,
 #   u'peakRssi': -71
 # }
+def time_to_localtime (utime):
+    return (time.strftime( '%H:%M:%S', time.localtime(utime/1000000)))
 
 def parse_line(line):
     # First let's skip logfile timestamp
@@ -86,6 +89,7 @@ def parse_line(line):
                 print ("Skippaan HeartBeatin.")
             continue
         entry['epc'] = unicodedata.normalize('NFKD', entry['epc']).encode('ascii','ignore')
+        entry['firstSeenTimestamp'] = time_to_localtime (entry['firstSeenTimestamp'])
         if (debug):
             print ("Löysin leimauksen :")
             pprint (entry)
@@ -119,4 +123,4 @@ if (os.path.exists(logfile)):
     with open(logfile, 'r') as contents:
         for line in contents:
             parse_line(line)
- 
+
