@@ -85,14 +85,24 @@ if "HTTP_USER_AGENT" in os.environ:
     if ( '-' in date ):
         date = date.replace("-","")
     mydebug = form.getvalue('debug', 'False')
+
     if ( mydebug == 'True' or mydebug == 'true' or mydebug == 1 ):
         debug = True
+
+	my_static_output = form.getvalue('static_output', 'False')
+    if ( my_static_output  == 'True' or my_static_output == 'true' or my_static_output == 1 ):
+        static_output = True
 
     if (debug):
         print ("Kaytetty date: " + date)
         print ("Laskentatapa: " + mode)
         print ("Kierrosmaara: " + str(numlaps))
         print ("Lampparit: " + str(offset))
+        if (static_output):
+            print ("Tallennan lopulliset tulokset"
+        else:
+            print ("En tallennan lopullisia tuloksia"
+
     race_start = int( time.mktime( time.strptime( date + " " + form.getvalue('start','10:00'), "%Y%m%d %H:%M")) ) * 1000000
     race_end = int( time.mktime( time.strptime( date + " " + form.getvalue('end','23:59'), "%Y%m%d %H:%M")) ) * 1000000
 else:
@@ -334,12 +344,15 @@ if (debug):
 
 if (use_cgi):
     print "</pre>"
-    try: 
-        FH = open (output_dir + "tulokset-" + date + ".html", "w")
-        #FH = open (output_dir + "tulokset-debug.html", "w")
-        FH.write("<html><head>\n<title>Tulokset " + date + "</title>\n<meta charset=\"UTF-8\">\n</head>\n<body>\n")
-        FH.write("<!-- tulokset.py&date=" + date + "&start=" + time.strftime( '%H:%M', time.localtime(race_start/1000000)) + "&mode=" + mode + "&laps=" + str(numlaps) + "&offset=" + str(offset) + "-->")
-    except IOError:
+    if (static_output):
+        try: 
+            FH = open (output_dir + "tulokset-" + date + ".html", "w")
+            #FH = open (output_dir + "tulokset-debug.html", "w")
+            FH.write("<html><head>\n<title>Tulokset " + date + "</title>\n<meta charset=\"UTF-8\">\n</head>\n<body>\n")
+            FH.write("<!-- tulokset.py&date=" + date + "&start=" + time.strftime( '%H:%M', time.localtime(race_start/1000000)) + "&mode=" + mode + "&laps=" + str(numlaps) + "&offset=" + str(offset) + "-->")
+        except IOError:
+            FH = False
+    else:
         FH = False
     double_print (FH, "<h2>Tulokset " + date[6:8] + "." + date[4:6] + "." + date[0:4] + "</h2>")
     double_print (FH, "<table border=\"1\">")
