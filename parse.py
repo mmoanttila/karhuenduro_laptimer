@@ -42,6 +42,7 @@ starttimes = defaultdict(list)
 endtimes = defaultdict(list)
 laptimes = defaultdict(list)
 results = []
+filter_tags = True
 
 # check for debug cmd parameter
 if ( len(sys.argv) > 1 and '-d' in sys.argv ):
@@ -84,8 +85,11 @@ if "HTTP_USER_AGENT" in os.environ:
 
     if ( '-' in date ):
         date = date.replace("-","")
-    mydebug = form.getvalue('debug', 'False')
+    myfilter = form.getvalue('bad', 'True')
+    if ( myfilter == 'False' or myfilter == 'false' or myfilter == 0 ):
+        filter_tags = False
 
+    mydebug = form.getvalue('debug', 'False')
     if ( mydebug == 'True' or mydebug == 'true' or mydebug == 1 ):
         debug = True
 
@@ -264,7 +268,7 @@ for line in contents:
             continue
         epc = unicodedata.normalize('NFKD', read['epc']).encode('ascii','ignore')
         allowed_tag = re.search(tag_filter, epc)
-        if (not allowed_tag):
+        if (not allowed_tag and filter_tags):
             if (debug):
                 print (epc, " ei ole meidan tagi.")
             continue
