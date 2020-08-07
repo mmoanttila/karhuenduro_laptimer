@@ -98,7 +98,8 @@ if "HTTP_USER_AGENT" in os.environ:
     if ( my_static_output  == 'True' or my_static_output == 'true' or my_static_output == 1 ):
         static_output = True
         # Only use output filename, when we need it
-        output_file_name = form.getvalue('output_file_name')
+        defaultfilename = "tulokset-" + date + ".html"
+        output_file_name = form.getvalue('output_file_name', defaultfilename)
         # Lets make sure we have correct ending.
         if (output_file_name[-5:] <> ".html" )
             output_file_name=output_file_name + ".html"
@@ -356,7 +357,6 @@ if (use_cgi):
     print "</pre>"
     if (static_output):
         try: 
-            #FH = open (output_dir + "tulokset-" + date + ".html", "w")
             FH = open (output_dir + output_file_name, "w")
             FH.write("<html><head>\n<title>Tulokset " + date + "</title>\n<meta charset=\"UTF-8\">\n</head>\n<body>\n")
             FH.write("<!-- tulokset.py&date=" + date + "&start=" + time.strftime( '%H:%M', time.localtime(race_start/1000000)) + "&mode=" + mode + "&laps=" + str(numlaps) + "&offset=" + str(offset) + "-->")
