@@ -109,9 +109,9 @@ if "HTTP_USER_AGENT" in os.environ:
         print ("Kierrosmaara: " + str(numlaps))
         print ("Lampparit: " + str(offset))
         if (static_output):
-            print ("Tallennan lopulliset tulokset"
+            print ("Tallennan lopulliset tulokset nimellä" + output_file_name)
         else:
-            print ("En tallennan lopullisia tuloksia"
+            print ("En tallenna lopullisia tuloksia")
 
     race_start = int( time.mktime( time.strptime( date + " " + form.getvalue('start','10:00'), "%Y%m%d %H:%M")) ) * 1000000
     race_end = int( time.mktime( time.strptime( date + " " + form.getvalue('end','23:59'), "%Y%m%d %H:%M")) ) * 1000000
