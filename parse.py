@@ -21,6 +21,7 @@ csv_url = "https://docs.google.com/spreadsheets/d/1dtqQQ6azJ5J0VBEHnnKLAkp3SlUK_
 tag_filter = "^BAD0...."
 log_dir = "../web/ajanotto/"
 output_dir = "../web/tulokset/"
+output_file_name = ""
 
 # End of settings
 
@@ -96,6 +97,11 @@ if "HTTP_USER_AGENT" in os.environ:
 	my_static_output = form.getvalue('static_output', 'False')
     if ( my_static_output  == 'True' or my_static_output == 'true' or my_static_output == 1 ):
         static_output = True
+        # Only use output filename, when we need it
+        output_file_name = form.getvalue('output_file_name')
+        # Lets make sure we have correct ending.
+        if (output_file_name[-5:] <> ".html" )
+            output_file_name=output_file_name + ".html"
 
     if (debug):
         print ("Kaytetty date: " + date)
@@ -350,8 +356,8 @@ if (use_cgi):
     print "</pre>"
     if (static_output):
         try: 
-            FH = open (output_dir + "tulokset-" + date + ".html", "w")
-            #FH = open (output_dir + "tulokset-debug.html", "w")
+            #FH = open (output_dir + "tulokset-" + date + ".html", "w")
+            FH = open (output_dir + output_file_name, "w")
             FH.write("<html><head>\n<title>Tulokset " + date + "</title>\n<meta charset=\"UTF-8\">\n</head>\n<body>\n")
             FH.write("<!-- tulokset.py&date=" + date + "&start=" + time.strftime( '%H:%M', time.localtime(race_start/1000000)) + "&mode=" + mode + "&laps=" + str(numlaps) + "&offset=" + str(offset) + "-->")
         except IOError:
