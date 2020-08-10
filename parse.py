@@ -80,7 +80,7 @@ if "HTTP_USER_AGENT" in os.environ:
     # Lets prepare to read GET-variables
     form = cgi.FieldStorage()
     # Let's use current date if not given on url
-    current_time=datetime.now().strftime('+%F %T')
+    current_time=datetime.now().strftime('%F %T')
     date = form.getvalue('date', '20190602')
     mode = form.getvalue('mode', 'laptime')
     numlaps = int(form.getvalue('laps', 0))
