@@ -76,7 +76,7 @@ def time_to_localtime (utime):
 
 def read_tags():
     my_tags = {}
-    with open( tagfile ) as csvfile:
+    with open( tagfile, "r" ) as csvfile:
         csvreader = csv.reader( csvfile, delimiter=',' )
         for row in csvreader:
             my_tags[row[2]] = row[1] 
@@ -140,7 +140,7 @@ else:
 form = cgi.FieldStorage()
 
 # Let's use current date if not given on url
-current_date=datetime.now().strftime('+%Y%m%d')
+current_date=datetime.now().strftime('%Y%m%d')
 date = form.getvalue('date', current_date)
 #date = os.getenv('date', current_date)
 logfile = log_dir + date + '.txt'
