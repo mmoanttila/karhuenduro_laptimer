@@ -45,6 +45,7 @@ endtimes = defaultdict(list)
 laptimes = defaultdict(list)
 results = []
 filter_tags = True
+static_output = False
 
 # check for debug cmd parameter
 if ( len(sys.argv) > 1 and '-d' in sys.argv ):
@@ -365,6 +366,7 @@ if (use_cgi):
             FH = False
     else:
         FH = False
+    double_print (FH,"<!-- " + os.environ['REQUEST_URI'] + " ->\n")
     double_print (FH, "<h2>Tulokset " + date[6:8] + "." + date[4:6] + "." + date[0:4] + "</h2>")
     double_print (FH, "<table border=\"1\">")
     my_number=1
@@ -397,7 +399,8 @@ else:
             print "    ", print_laptime( laptimes[epc][col] )[:-3], "secs"
     
 if (use_cgi):
-    print ("<br>\n<hr>\n<a href=\"/tulokset/tulokset-" + date + ".html\">Valmiit tulokset</a>")
+    if ( static_output == True ):
+        print ("<br>\n<hr>\n<a href=\"/tulokset/" + output_file_name + "\">Valmiit tulokset</a>")
     double_print (FH, "<P><I>Last updated: " + current_time + "</I></P>")
     double_print (FH, "</html>")
     if (FH):
