@@ -102,7 +102,7 @@ if "HTTP_USER_AGENT" in os.environ:
         defaultfilename = "tulokset-" + date + ".html"
         output_file_name = form.getvalue('output_file_name', defaultfilename)
         # Lets make sure we have correct ending.
-        if (output_file_name[-5:] <> ".html" )
+        if (output_file_name[-5:] <> ".html" ):
             output_file_name=output_file_name + ".html"
 
     if (debug):
