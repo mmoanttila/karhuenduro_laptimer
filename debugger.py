@@ -40,12 +40,12 @@ def html_footer():
     print "</html>"
 
 def table_start():
-    print '<table style="width:100%">'
+    print '<table style="width:400px">'
     print "  <tr>"
-    print "    <th>Port</th>"
+    print "    <th style=\"width:20px;\">Port</th>"
     print "    <th>EPC</th>"
-    print "    <th>Time</th>"
-    print "    <th>Rssi</th>"
+    print "    <th style=\"width:100px;\">Time</th>"
+    print "    <th style=\"width:30px;\">Rssi</th>"
     print "  </tr>"
 
 def table_row(entry):
