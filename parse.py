@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+# -*- coding: utf-8 -*-
 import json
 import time
 from pprint import pprint
@@ -21,6 +22,7 @@ csv_url = "https://docs.google.com/spreadsheets/d/1dtqQQ6azJ5J0VBEHnnKLAkp3SlUK_
 tag_filter = "^BAD0...."
 log_dir = "../web/ajanotto/"
 output_dir = "../web/tulokset/"
+output_file_name = ""
 
 # End of settings
 
@@ -42,6 +44,8 @@ starttimes = defaultdict(list)
 endtimes = defaultdict(list)
 laptimes = defaultdict(list)
 results = []
+filter_tags = True
+static_output = False
 
 # check for debug cmd parameter
 if ( len(sys.argv) > 1 and '-d' in sys.argv ):
@@ -84,15 +88,34 @@ if "HTTP_USER_AGENT" in os.environ:
 
     if ( '-' in date ):
         date = date.replace("-","")
+    myfilter = form.getvalue('bad', 'True')
+    if ( myfilter == 'False' or myfilter == 'false' or myfilter == 0 ):
+        filter_tags = False
+
     mydebug = form.getvalue('debug', 'False')
     if ( mydebug == 'True' or mydebug == 'true' or mydebug == 1 ):
         debug = True
+
+    my_static_output = form.getvalue('static_output', 'False')
+    if ( my_static_output  == 'True' or my_static_output == 'true' or my_static_output == 1 ):
+        static_output = True
+        # Only use output filename, when we need it
+        defaultfilename = "tulokset-" + date + ".html"
+        output_file_name = form.getvalue('output_file_name', defaultfilename)
+        # Lets make sure we have correct ending.
+        if (output_file_name[-5:] <> ".html" ):
+            output_file_name=output_file_name + ".html"
 
     if (debug):
         print ("Kaytetty date: " + date)
         print ("Laskentatapa: " + mode)
         print ("Kierrosmaara: " + str(numlaps))
         print ("Lampparit: " + str(offset))
+        if (static_output):
+            print ("Tallennan lopulliset tulokset nimellä" + output_file_name)
+        else:
+            print ("En tallenna lopullisia tuloksia")
+
     race_start = int( time.mktime( time.strptime( date + " " + form.getvalue('start','10:00'), "%Y%m%d %H:%M")) ) * 1000000
     race_end = int( time.mktime( time.strptime( date + " " + form.getvalue('end','23:59'), "%Y%m%d %H:%M")) ) * 1000000
 else:
@@ -254,7 +277,7 @@ for line in contents:
             continue
         epc = unicodedata.normalize('NFKD', read['epc']).encode('ascii','ignore')
         allowed_tag = re.search(tag_filter, epc)
-        if (not allowed_tag):
+        if (not allowed_tag and filter_tags):
             if (debug):
                 print (epc, " ei ole meidan tagi.")
             continue
@@ -334,13 +357,16 @@ if (debug):
 
 if (use_cgi):
     print "</pre>"
-    try: 
-        FH = open (output_dir + "tulokset-" + date + ".html", "w")
-        #FH = open (output_dir + "tulokset-debug.html", "w")
-        FH.write("<html><head>\n<title>Tulokset " + date + "</title>\n<meta charset=\"UTF-8\">\n</head>\n<body>\n")
-        FH.write("<!-- tulokset.py&date=" + date + "&start=" + time.strftime( '%H:%M', time.localtime(race_start/1000000)) + "&mode=" + mode + "&laps=" + str(numlaps) + "&offset=" + str(offset) + "-->")
-    except IOError:
+    if (static_output):
+        try: 
+            FH = open (output_dir + output_file_name, "w")
+            FH.write("<html><head>\n<title>Tulokset " + date + "</title>\n<meta charset=\"UTF-8\">\n</head>\n<body>\n")
+            FH.write("<!-- tulokset.py&date=" + date + "&start=" + time.strftime( '%H:%M', time.localtime(race_start/1000000)) + "&mode=" + mode + "&laps=" + str(numlaps) + "&offset=" + str(offset) + "-->")
+        except IOError:
+            FH = False
+    else:
         FH = False
+    double_print (FH,"<!-- " + os.environ['REQUEST_URI'] + " ->\n")
     double_print (FH, "<h2>Tulokset " + date[6:8] + "." + date[4:6] + "." + date[0:4] + "</h2>")
     double_print (FH, "<table border=\"1\">")
     my_number=1
@@ -373,7 +399,8 @@ else:
             print "    ", print_laptime( laptimes[epc][col] )[:-3], "secs"
     
 if (use_cgi):
-    print ("<br>\n<hr>\n<a href=\"/tulokset/tulokset-" + date + ".html\">Valmiit tulokset</a>")
+    if ( static_output == True ):
+        print ("<br>\n<hr>\n<a href=\"/tulokset/" + output_file_name + "\">Valmiit tulokset</a>")
     double_print (FH, "<P><I>Last updated: " + current_time + "</I></P>")
     double_print (FH, "</html>")
     if (FH):
