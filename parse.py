@@ -96,7 +96,7 @@ if "HTTP_USER_AGENT" in os.environ:
     if ( mydebug == 'True' or mydebug == 'true' or mydebug == 1 ):
         debug = True
 
-	my_static_output = form.getvalue('static_output', 'False')
+    my_static_output = form.getvalue('static_output', 'False')
     if ( my_static_output  == 'True' or my_static_output == 'true' or my_static_output == 1 ):
         static_output = True
         # Only use output filename, when we need it
