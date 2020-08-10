@@ -366,7 +366,7 @@ if (use_cgi):
             FH = False
     else:
         FH = False
-    double_print (FH,"<!-- " + os.environ['REQUEST_URI'] + " ->\n")
+    double_print (FH,"<!-- " + os.environ['REQUEST_URI'] + " -->\n")
     double_print (FH, "<h2>Tulokset " + date[6:8] + "." + date[4:6] + "." + date[0:4] + "</h2>")
     double_print (FH, "<table border=\"1\">")
     my_number=1
