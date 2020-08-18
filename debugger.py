@@ -4,6 +4,7 @@
 
 parameters:
     date = minkä päivän lokia ihmetellään (oletus tämänpäiväinen)
+    tagfilter = regex, jonka pitää matchata epc:en, jotta se näytetään (oletus BAD0....)
 """
 import cgi, cgitb
 import csv
@@ -12,6 +13,7 @@ from datetime import timedelta, datetime
 from pprint import pprint
 import json
 import time
+import re
 import unicodedata
 
 log_dir = "../web/ajanotto/"
@@ -110,6 +112,12 @@ def parse_line(line):
             if (debug):
                 print ("Skippaan HeartBeatin.")
             continue
+        allowed_tag = re.search(tagfilter, entry['epc'])
+        # Use tagfilter form-parameter
+        if (not allowed_tag):
+            if (debug):
+                print ("Tagi ei matchaa filtteriin: ", tagfilter)
+            continue
         entry['epc'] = unicodedata.normalize('NFKD', entry['epc']).encode('ascii','ignore')
         entry['tag'] = print_tag(entry['epc'])
         entry['localtime'] = time_to_localtime (entry['firstSeenTimestamp'])
@@ -142,6 +150,7 @@ form = cgi.FieldStorage()
 # Let's use current date if not given on url
 current_date=datetime.now().strftime('%Y%m%d')
 date = form.getvalue('date', current_date)
+tagfilter = form.getvalue('tagfilter', "^BAD0....")
 #date = os.getenv('date', current_date)
 logfile = log_dir + date + '.txt'
 
