@@ -4,6 +4,7 @@
 
 parameters:
     date = minkä päivän lokia ihmetellään (oletus tämänpäiväinen)
+    tagfilter = regex, jonka pitää matchata epc:en, jotta se näytetään (oletus BAD0....)
 """
 import cgi, cgitb
 import csv
@@ -12,6 +13,8 @@ from datetime import timedelta, datetime
 from pprint import pprint
 import json
 import time
+import re
+import fnmatch
 import unicodedata
 
 log_dir = "../web/ajanotto/"
@@ -19,6 +22,7 @@ tagfile = "tags.csv"
 
 # This will contain all read timestamps
 reads = list()
+cgitb.enable()
 
 def html_header():
     print "Content-type: text/html"
@@ -35,17 +39,26 @@ def html_header():
     print "</style>"
     print "<body>"
  
+def html_menu():
+	print "<form>"
+	print "<label for=\"logfile\">Valitse loki:s</label>"
+	print "<select name=\"date\">"
+	for F in read_logs():
+		print ("  <option value=\"" + F[:8] + "\">" + F[:4] + "-" + F[4:6] + "-" + F[6:8] + "</option>")
+	print "</select>"
+	print "</form>"
+
 def html_footer():
     print "</body>"
     print "</html>"
 
 def table_start():
-    print '<table style="width:100%">'
+    print '<table style="width:400px">'
     print "  <tr>"
-    print "    <th>Port</th>"
+    print "    <th style=\"width:20px;\">Port</th>"
     print "    <th>EPC</th>"
-    print "    <th>Time</th>"
-    print "    <th>Rssi</th>"
+    print "    <th style=\"width:100px;\">Time</th>"
+    print "    <th style=\"width:30px;\">Rssi</th>"
     print "  </tr>"
 
 def table_row(entry):
@@ -76,7 +89,7 @@ def time_to_localtime (utime):
 
 def read_tags():
     my_tags = {}
-    with open( tagfile ) as csvfile:
+    with open( tagfile, "r" ) as csvfile:
         csvreader = csv.reader( csvfile, delimiter=',' )
         for row in csvreader:
             my_tags[row[2]] = row[1] 
@@ -87,6 +100,12 @@ def print_tag (tag):
         return tags[tag]
     else:
         return tag
+
+# This should return 10 latest logfiles as a list
+def read_logs():
+	files = fnmatch.filter(os.listdir(log_dir),"????????.txt")
+	files.sort(reverse=True)
+	return files[:10]
 
 def parse_line(line):
     # First let's skip logfile timestamp
@@ -110,6 +129,12 @@ def parse_line(line):
             if (debug):
                 print ("Skippaan HeartBeatin.")
             continue
+        allowed_tag = re.search(tagfilter, entry['epc'])
+        # Use tagfilter form-parameter
+        if (not allowed_tag):
+            if (debug):
+                print ("Tagi ei matchaa filtteriin: ", tagfilter)
+            continue
         entry['epc'] = unicodedata.normalize('NFKD', entry['epc']).encode('ascii','ignore')
         entry['tag'] = print_tag(entry['epc'])
         entry['localtime'] = time_to_localtime (entry['firstSeenTimestamp'])
@@ -130,18 +155,19 @@ def write_csv (data):
             csvwriter.writerow(row)
 
 # check for debug cmd parameter
-if ( len(sys.argv) > 1 and '-d' in sys.argv ):
-    print "Debugging Enabled!"
-    debug = True
-else:
-    debug = False
+#if ( len(sys.argv) > 1 and '-d' in sys.argv ):
+#    print "Debugging Enabled!"
+#    debug = True
+#else:
+debug = False
 
-#cgitb.enable()
+cgitb.enable()
 form = cgi.FieldStorage()
 
 # Let's use current date if not given on url
-current_date=datetime.now().strftime('+%Y%m%d')
+current_date=datetime.now().strftime('%Y%m%d')
 date = form.getvalue('date', current_date)
+tagfilter = form.getvalue('tagfilter', "^BAD0....")
 #date = os.getenv('date', current_date)
 logfile = log_dir + date + '.txt'
 
@@ -157,6 +183,7 @@ if (os.path.exists(logfile)):
             parse_line(line)
     #write_csv(reads)
     html_header()
+    html_menu()
     print_html_table(reads)
     html_footer()
     #    print (json.dumps(reads)) 
