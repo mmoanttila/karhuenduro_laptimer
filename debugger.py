@@ -14,6 +14,7 @@ from pprint import pprint
 import json
 import time
 import re
+import fnmatch
 import unicodedata
 
 log_dir = "../web/ajanotto/"
@@ -89,6 +90,12 @@ def print_tag (tag):
         return tags[tag]
     else:
         return tag
+
+# This should return 10 latest logfiles as a list
+def read_logs():
+	files = fnmatch.filter(os.listdir(log_dir),"????????.txt")
+	files.sort(reverse=True)
+	return files[:10]
 
 def parse_line(line):
     # First let's skip logfile timestamp
