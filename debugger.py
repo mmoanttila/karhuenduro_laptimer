@@ -40,14 +40,17 @@ def html_header():
     print "<body>"
  
 def html_menu():
-	print "<form>"
-	print "<label for=\"logfile\">Valitse loki:s</label>"
-	print "<select name=\"date\">"
-	for F in read_logs():
-		print ("  <option value=\"" + F[:8] + "\">" + F[:4] + "-" + F[4:6] + "-" + F[6:8] + "</option>")
-	print "</select>"
-	print "<input type=\"submit\" name=\"submit\" value=\"Päivitä\">"
-	print "</form>"
+    print "<form>"
+    print "<label for=\"logfile\">Valitse loki:s</label>"
+    print "<select name=\"date\">"
+    for F in read_logs():
+        if ( F[:8] == date ):
+            print ("  <option value=\"" + F[:8] + "\" selected>" + F[:4] + "-" + F[4:6] + "-" + F[6:8] + "</option>")
+        else:
+            print ("  <option value=\"" + F[:8] + "\">" + F[:4] + "-" + F[4:6] + "-" + F[6:8] + "</option>")
+    print "</select>"
+   	print "<input type=\"submit\" name=\"submit\" value=\"Päivitä\">"
+    print "</form>"
 
 def html_footer():
     print "</body>"
@@ -185,7 +188,8 @@ if (os.path.exists(logfile)):
     #write_csv(reads)
     html_header()
     html_menu()
-    print_html_table(reads)
+    if (len (reads) > 0 ):
+        print_html_table(reads)
     html_footer()
     #    print (json.dumps(reads)) 
 
