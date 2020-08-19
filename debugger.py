@@ -188,7 +188,8 @@ if (os.path.exists(logfile)):
     #write_csv(reads)
     html_header()
     html_menu()
-    print_html_table(reads)
+    if (len (reads) > 0 ):
+        print_html_table(reads)
     html_footer()
     #    print (json.dumps(reads)) 
 
