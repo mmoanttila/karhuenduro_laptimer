@@ -49,7 +49,7 @@ def html_menu():
         else:
             print ("  <option value=\"" + F[:8] + "\">" + F[:4] + "-" + F[4:6] + "-" + F[6:8] + "</option>")
     print "</select>"
-   	print "<input type=\"submit\" name=\"submit\" value=\"Päivitä\">"
+    print "<input type=\"submit\" name=\"submit\" value=\"Päivitä\">"
     print "</form>"
 
 def html_footer():
