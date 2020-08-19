@@ -183,7 +183,7 @@ if (os.path.exists(logfile)):
             parse_line(line)
     #write_csv(reads)
     html_header()
-	html_menu()
+    html_menu()
     print_html_table(reads)
     html_footer()
     #    print (json.dumps(reads)) 
