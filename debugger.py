@@ -22,6 +22,7 @@ tagfile = "tags.csv"
 
 # This will contain all read timestamps
 reads = list()
+cgitb.enable()
 
 def html_header():
     print "Content-type: text/html"
@@ -154,13 +155,13 @@ def write_csv (data):
             csvwriter.writerow(row)
 
 # check for debug cmd parameter
-if ( len(sys.argv) > 1 and '-d' in sys.argv ):
-    print "Debugging Enabled!"
-    debug = True
-else:
-    debug = False
+#if ( len(sys.argv) > 1 and '-d' in sys.argv ):
+#    print "Debugging Enabled!"
+#    debug = True
+#else:
+debug = False
 
-#cgitb.enable()
+cgitb.enable()
 form = cgi.FieldStorage()
 
 # Let's use current date if not given on url
