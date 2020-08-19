@@ -38,6 +38,15 @@ def html_header():
     print "</style>"
     print "<body>"
  
+def html_menu():
+	print "<form>"
+	print "<label for=\"logfile\">Valitse loki:s</label>"
+	print "<select name=\"date\">"
+	for F in read_logs():
+		print ("  <option value=\"" + F[:8] + "\">" + F[:4] + "-" + F[4:6] + "-" + F[6:8] + "</option>")
+	print "</select>"
+	print "</form>"
+
 def html_footer():
     print "</body>"
     print "</html>"
@@ -173,6 +182,7 @@ if (os.path.exists(logfile)):
             parse_line(line)
     #write_csv(reads)
     html_header()
+	html_menu()
     print_html_table(reads)
     html_footer()
     #    print (json.dumps(reads)) 
