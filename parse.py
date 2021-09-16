@@ -18,7 +18,8 @@ import sys
 startports = [1, 3]
 endports = [2, 4]
 log_url = "https://www.karhuenduro.fi/ajanotto/"
-csv_url = "https://docs.google.com/spreadsheets/d/1dtqQQ6azJ5J0VBEHnnKLAkp3SlUK_6OzSk2RQivY6L0/export?format=csv&id=1dtqQQ6azJ5J0VBEHnnKLAkp3SlUK_6OzSk2RQivY6L0&gid=0"
+# csv_url = "https://docs.google.com/spreadsheets/d/1dtqQQ6azJ5J0VBEHnnKLAkp3SlUK_6OzSk2RQivY6L0/export?format=csv&id=1dtqQQ6azJ5J0VBEHnnKLAkp3SlUK_6OzSk2RQivY6L0&gid=0"
+csv_url = "https://karhuenduro.fi/ilmo-test/ilmot/jarilan-sprint.csv"
 tag_filter = "^0000...."
 log_dir = "../web/ajanotto/"
 output_dir = "../web/tulokset/"
