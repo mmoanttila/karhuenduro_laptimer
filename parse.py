@@ -24,7 +24,7 @@ tag_filter = "^0000...."
 log_dir = "../web/ajanotto/"
 output_dir = "../web/tulokset/"
 output_file_name = ""
-current_file = "../ilmo/current.json"
+current_file = "../web/ilmo/current.json"
 
 # End of settings
 
