@@ -46,7 +46,7 @@ starttimes = defaultdict(list)
 endtimes = defaultdict(list)
 laptimes = defaultdict(list)
 results = []
-filter_tags = True
+filter_tags = False
 static_output = False
 
 # check for debug cmd parameter
@@ -91,8 +91,8 @@ if "HTTP_USER_AGENT" in os.environ:
     if ( '-' in date ):
         date = date.replace("-","")
     myfilter = form.getvalue('bad', 'True')
-    if ( myfilter == 'False' or myfilter == 'false' or myfilter == 0 ):
-        filter_tags = False
+    if ( myfilter == 'True' or myfilter == 'true' or myfilter == 1 ):
+        filter_tags = True
 
     mydebug = form.getvalue('debug', 'False')
     if ( mydebug == 'True' or mydebug == 'true' or mydebug == 1 ):
@@ -164,8 +164,8 @@ else:
         print ("Ei saatu avattu timestamppeja, lopetetaan")
         sys.exit(99)
 
-if (debug):
-    print (contents.info())
+#if (debug):
+#    print (contents.info())
 
 data = []
 maxlaps = 0
