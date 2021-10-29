@@ -24,6 +24,7 @@ tag_filter = "^0000...."
 log_dir = "../web/ajanotto/"
 output_dir = "../web/tulokset/"
 output_file_name = ""
+current_file = "../ilmo/current.json"
 
 # End of settings
 
@@ -170,6 +171,7 @@ data = []
 maxlaps = 0
 
 def send_csvfile (data, filename="tulokset.csv"):
+    """Will send csv-file to browser."""
     if (debug):
         print ("Trying to return csv-file to browser as " + filename )
     # First suitable headers
@@ -185,8 +187,8 @@ def print_laptime (usec):
     return str( timedelta( milliseconds=usec//1000 ) )
 
 def read_tags (tagfile):
-    # only use local-cache, if it's newer than one hour
-    if ( not os.path.exists (tagfile ) or time.time() - os.path.getmtime (tagfile) > 3600 ):
+    # only use local-cache, if it's older than one 10 minutes
+    if ( not os.path.exists (tagfile ) or time.time() - os.path.getmtime (tagfile) > 600 ):
         try:
             if (debug):
                 print ("Trying to read .csv from " + csv_url )
@@ -223,6 +225,10 @@ def read_tags (tagfile):
         my_tags[row[2]] = row[1] + " | " + row[0]
     return my_tags
 
+def get_current (file):
+    current = json.load( open(file, "r") )
+    return "../" + current["file"]
+
 def print_tag (tag):
     if tags.has_key (tag):
         return tags[tag]
@@ -246,6 +252,16 @@ def double_print (FO, line):
     print (line)
     if ( FO ):
         FO.write (line + "\n")
+
+
+if (debug):
+    print ("Yritän lukea tapahtuma tietoja tiedostosta: ", current_file, ".\n")
+current = get_current(current_file)
+if (debug):
+    print ("Ilmoittautuneet tiedostossa: ", current, ".\n")
+
+# csv_url = "https://karhuenduro.fi/ilmo/ilmot/jarilan-sprint.csv"
+csv_url = "https://karhuenduro.fi/ilmo/ilmot/" + current
 
 tags = read_tags( 'tags.csv')
 
