@@ -90,7 +90,7 @@ if "HTTP_USER_AGENT" in os.environ:
 
     if ( '-' in date ):
         date = date.replace("-","")
-    myfilter = form.getvalue('bad', 'True')
+    myfilter = form.getvalue('bad')
     if ( myfilter == 'True' or myfilter == 'true' or myfilter == 1 ):
         filter_tags = True
 
