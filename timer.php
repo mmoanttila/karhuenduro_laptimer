@@ -27,7 +27,7 @@ Laskennan tyyppi:<br>
 Tee staattinen tulos-sivu:
 	<input type="checkbox" name="static_output" value="True"><br>
 Tulos-sivun nimi:
-	<input type="text" name="output_file_name" value=""><br>
+	<input type="text" name="output_file_name" value="tulokset-<?php echo date("Ymd") ?>.html"><br>
 Käytä pelkästään "omia" TAGeja (0000*):
 	<input type="checkbox" name="bad" value="True"><br>
 Debug:
