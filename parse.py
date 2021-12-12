@@ -25,6 +25,8 @@ log_dir = "../web/ajanotto/"
 output_dir = "../web/tulokset/"
 output_file_name = ""
 current_file = "../web/ilmo/current.json"
+static_numbers = "../web/ilmo/ilmot/static.csv"
+use_static_numbers = False
 
 # End of settings
 
@@ -97,6 +99,10 @@ if "HTTP_USER_AGENT" in os.environ:
     mydebug = form.getvalue('debug', 'False')
     if ( mydebug == 'True' or mydebug == 'true' or mydebug == 1 ):
         debug = True
+
+    my_static = form.getvalue('static_numbers')
+    if ( my_static == 'True' or my_static == 'true' or my_static == 1 ):
+        use_static_numbers == True
 
     my_static_output = form.getvalue('static_output', 'False')
     if ( my_static_output  == 'True' or my_static_output == 'true' or my_static_output == 1 ):
@@ -253,6 +259,7 @@ def double_print (FO, line):
     if ( FO ):
         FO.write (line + "\n")
 
+    
 
 if (debug):
     print ("Yritän lukea tapahtuma tietoja tiedostosta: ", current_file, ".\n")
@@ -261,7 +268,10 @@ if (debug):
     print ("Ilmoittautuneet tiedostossa: ", current, ".\n")
 
 # csv_url = "https://karhuenduro.fi/ilmo/ilmot/jarilan-sprint.csv"
-csv_url = "https://karhuenduro.fi/ilmo/ilmot/" + current
+if (use_static_numbers):
+    csv_url = "https://karhuenduro.fi/ilmo/ilmot/" + "static.csv"
+else:
+    csv_url = "https://karhuenduro.fi/ilmo/ilmot/" + current
 
 tags = read_tags( 'tags.csv')
 
