@@ -192,7 +192,26 @@ def print_laptime (usec):
         print "Also secs=", secs, "msecs=", msecs
     return str( timedelta( milliseconds=usec//1000 ) )
 
-def read_tags (tagfile):
+def read_tags (csvfile):
+    """ Will read tags and names from given csv-file """
+    if ( os.path.exists (csvfile) ):
+        if (debug):
+            print ("Reading tags from csvfile: " + csvfile)
+
+        FD = open(csvfile, "r")
+        my_tags ={}
+        if (debug):
+            print ("Parsin tagilistaa CSV:sta")
+        csvreader = csv.reader( FD, delimiter=',' )
+        for row in csvreader:
+            if (debug):
+                print "Luin tagin: " + row[2] + " = " + row[1]
+            if ( len(row) < 3 ): # Adding number to name if it exists on third column
+                continue
+            my_tags[row[2]] = row[1] + " | " + row[0]
+        return my_tags
+
+def read_tags_cached (tagfile):
     # only use local-cache, if it's older than one 10 minutes
     if ( not os.path.exists (tagfile ) or time.time() - os.path.getmtime (tagfile) > 600 ):
         try:
@@ -267,18 +286,18 @@ current = get_current(current_file)
 
 # csv_url = "https://karhuenduro.fi/ilmo/ilmot/jarilan-sprint.csv"
 if (use_static_numbers == True):
-    csv_url = "https://karhuenduro.fi/ilmo/ilmot/" + "static.csv"
+    ilmot = static_numbers
+    # ../web/ilmo/ilmot/static.csv
+    # csv_url = "https://karhuenduro.fi/ilmo/ilmot/" + "static.csv"
     if (debug):
-        print ("Haluaisin ottaa kiinteät numerot: " + csv_url)
+        print ("Haluaisin ottaa kiinteät numerot: " + ilmot)
 else:
-    csv_url = "https://karhuenduro.fi/ilmo/ilmot/" + current
+    # csv_url = "https://karhuenduro.fi/ilmo/ilmot/" + current
+    ilmot = "../web/ilmo/ilmot/" + current
     if (debug):
-        print ("Haluaisin ottaa nykyiset ilmoittautuneet: " + csv_url)
+        print ("Haluaisin ottaa nykyiset ilmoittautuneet: " + ilmot)
 
-if (debug):
-    print ("Ilmoittautuneet tiedostossa: ", csv_url, ".\n")
-
-tags = read_tags( 'tags.csv')
+tags = read_tags( ilmot )
 
 #with open('20190530.txt',mode = 'r') as contents:
 
