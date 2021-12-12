@@ -24,7 +24,7 @@ Laskennan tyyppi:<br>
         <option value="laptime2">Kierrosaika, kisan alku kellosta</option>
         <option value="stage">Pätkäaika</option>
     </select><br>
-Käytä kiinteitä numeroita:<br>
+Käytä kiinteitä numeroita:
 	<input type="checkbox" name="static_numbers" value="True"><br>
 Tee staattinen tulos-sivu:
 	<input type="checkbox" name="static_output" value="True"><br>
