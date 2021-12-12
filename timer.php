@@ -9,7 +9,7 @@
 <H2>Laptimer</H2>
 <P>
 <form action="https://www.karhuenduro.fi/cgi-bin/tulokset.py">Lokin PVM:<br>
-    <input type="date" min="2019-01-01" name="date"><br>
+    <input type="date" min="2021-01-01" name="date"><br>
 Kisan/erän alkuaika:<br>
     <input type="time" name="start"><br>
 Kisan/erän loppuaika:<br>
@@ -24,6 +24,8 @@ Laskennan tyyppi:<br>
         <option value="laptime2">Kierrosaika, kisan alku kellosta</option>
         <option value="stage">Pätkäaika</option>
     </select><br>
+Käytä kiinteitä numeroita:<br>
+	<input type="checkbox" name="static_numbers" value="True"><br>
 Tee staattinen tulos-sivu:
 	<input type="checkbox" name="static_output" value="True"><br>
 Tulos-sivun nimi:
