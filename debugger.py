@@ -171,7 +171,7 @@ form = cgi.FieldStorage()
 # Let's use current date if not given on url
 current_date=datetime.now().strftime('%Y%m%d')
 date = form.getvalue('date', current_date)
-tagfilter = form.getvalue('tagfilter', "^BAD0....")
+tagfilter = form.getvalue('tagfilter', "^0000....")
 #date = os.getenv('date', current_date)
 logfile = log_dir + date + '.txt'
 html_header()
