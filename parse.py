@@ -18,11 +18,14 @@ import sys
 startports = [1, 3]
 endports = [2, 4]
 log_url = "https://www.karhuenduro.fi/ajanotto/"
-csv_url = "https://docs.google.com/spreadsheets/d/1dtqQQ6azJ5J0VBEHnnKLAkp3SlUK_6OzSk2RQivY6L0/export?format=csv&id=1dtqQQ6azJ5J0VBEHnnKLAkp3SlUK_6OzSk2RQivY6L0&gid=0"
-tag_filter = "^BAD0...."
+# csv_url = "https://docs.google.com/spreadsheets/d/1dtqQQ6azJ5J0VBEHnnKLAkp3SlUK_6OzSk2RQivY6L0/export?format=csv&id=1dtqQQ6azJ5J0VBEHnnKLAkp3SlUK_6OzSk2RQivY6L0&gid=0"
+csv_url = "https://karhuenduro.fi/ilmo/ilmot/jarilan-sprint.csv"
+tag_filter = "^0000...."
 log_dir = "../web/ajanotto/"
 output_dir = "../web/tulokset/"
 output_file_name = ""
+current_file = "../web/ilmo/current.json"
+static_numbers = "../web/ilmo/ilmot/static.csv"
 
 # End of settings
 
@@ -44,8 +47,9 @@ starttimes = defaultdict(list)
 endtimes = defaultdict(list)
 laptimes = defaultdict(list)
 results = []
-filter_tags = True
+filter_tags = False
 static_output = False
+use_static_numbers = False
 
 # check for debug cmd parameter
 if ( len(sys.argv) > 1 and '-d' in sys.argv ):
@@ -80,7 +84,7 @@ if "HTTP_USER_AGENT" in os.environ:
     # Lets prepare to read GET-variables
     form = cgi.FieldStorage()
     # Let's use current date if not given on url
-    current_time=datetime.now().strftime('+%F %T')
+    current_time=datetime.now().strftime('%F %T')
     date = form.getvalue('date', '20190602')
     mode = form.getvalue('mode', 'laptime')
     numlaps = int(form.getvalue('laps', 0))
@@ -88,13 +92,17 @@ if "HTTP_USER_AGENT" in os.environ:
 
     if ( '-' in date ):
         date = date.replace("-","")
-    myfilter = form.getvalue('bad', 'True')
-    if ( myfilter == 'False' or myfilter == 'false' or myfilter == 0 ):
-        filter_tags = False
+    myfilter = form.getvalue('bad')
+    if ( myfilter == 'True' or myfilter == 'true' or myfilter == 1 ):
+        filter_tags = True
 
     mydebug = form.getvalue('debug', 'False')
     if ( mydebug == 'True' or mydebug == 'true' or mydebug == 1 ):
         debug = True
+
+    my_static = form.getvalue('static_numbers', 'False')
+    if ( my_static == 'True' or my_static == 'true' or my_static == 1 ):
+        use_static_numbers = True
 
     my_static_output = form.getvalue('static_output', 'False')
     if ( my_static_output  == 'True' or my_static_output == 'true' or my_static_output == 1 ):
@@ -162,13 +170,14 @@ else:
         print ("Ei saatu avattu timestamppeja, lopetetaan")
         sys.exit(99)
 
-if (debug):
-    print (contents.info())
+#if (debug):
+#    print (contents.info())
 
 data = []
 maxlaps = 0
 
 def send_csvfile (data, filename="tulokset.csv"):
+    """Will send csv-file to browser."""
     if (debug):
         print ("Trying to return csv-file to browser as " + filename )
     # First suitable headers
@@ -183,9 +192,28 @@ def print_laptime (usec):
         print "Also secs=", secs, "msecs=", msecs
     return str( timedelta( milliseconds=usec//1000 ) )
 
-def read_tags (tagfile):
-    # only use local-cache, if it's newer than one hour
-    if ( not os.path.exists (tagfile ) or time.time() - os.path.getmtime (tagfile) > 3600 ):
+def read_tags (csvfile):
+    """ Will read tags and names from given csv-file """
+    if ( os.path.exists (csvfile) ):
+        if (debug):
+            print ("Reading tags from csvfile: " + csvfile)
+
+        FD = open(csvfile, "r")
+        my_tags ={}
+        if (debug):
+            print ("Parsin tagilistaa CSV:sta")
+        csvreader = csv.reader( FD, delimiter=',' )
+        for row in csvreader:
+            if (debug):
+                print "Luin tagin: " + row[2] + " = " + row[1]
+            if ( len(row) < 3 ): # Adding number to name if it exists on third column
+                continue
+            my_tags[row[2]] = row[1] + " | " + row[0]
+        return my_tags
+
+def read_tags_cached (tagfile):
+    # only use local-cache, if it's older than one 10 minutes
+    if ( not os.path.exists (tagfile ) or time.time() - os.path.getmtime (tagfile) > 600 ):
         try:
             if (debug):
                 print ("Trying to read .csv from " + csv_url )
@@ -217,8 +245,14 @@ def read_tags (tagfile):
     for row in csvreader:
         if (debug):
             print "Luin tagin: " + row[2] + " = " + row[1]
+        if ( len(row) < 3 ):
+            continue
         my_tags[row[2]] = row[1] + " | " + row[0]
     return my_tags
+
+def get_current (file):
+    current = json.load( open(file, "r") )
+    return "../" + current["file"]
 
 def print_tag (tag):
     if tags.has_key (tag):
@@ -244,7 +278,26 @@ def double_print (FO, line):
     if ( FO ):
         FO.write (line + "\n")
 
-tags = read_tags( 'tags.csv')
+    
+
+if (debug):
+    print ("Yritän lukea tapahtuma tietoja tiedostosta: ", current_file, ".\n")
+current = get_current(current_file)
+
+# csv_url = "https://karhuenduro.fi/ilmo/ilmot/jarilan-sprint.csv"
+if (use_static_numbers == True):
+    ilmot = static_numbers
+    # ../web/ilmo/ilmot/static.csv
+    # csv_url = "https://karhuenduro.fi/ilmo/ilmot/" + "static.csv"
+    if (debug):
+        print ("Haluaisin ottaa kiinteät numerot: " + ilmot)
+else:
+    # csv_url = "https://karhuenduro.fi/ilmo/ilmot/" + current
+    ilmot = "../web/ilmo/ilmot/" + current
+    if (debug):
+        print ("Haluaisin ottaa nykyiset ilmoittautuneet: " + ilmot)
+
+tags = read_tags( ilmot )
 
 #with open('20190530.txt',mode = 'r') as contents:
 
@@ -368,6 +421,7 @@ if (use_cgi):
         FH = False
     double_print (FH,"<!-- " + os.environ['REQUEST_URI'] + " -->\n")
     double_print (FH, "<h2>Tulokset " + date[6:8] + "." + date[4:6] + "." + date[0:4] + "</h2>")
+    double_print (FH, "<h4>" + output_file_name + "</h4>")
     double_print (FH, "<table border=\"1\">")
     my_number=1
     for epc, mylaps, mytotal in results_sorted:
