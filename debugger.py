@@ -174,6 +174,7 @@ date = form.getvalue('date', current_date)
 tagfilter = form.getvalue('tagfilter', "^BAD0....")
 #date = os.getenv('date', current_date)
 logfile = log_dir + date + '.txt'
+html_header()
 
 if (debug):
    print ("Trying to open: ", logfile)
