@@ -91,7 +91,7 @@ def print_html_table(data):
 def time_to_localtime (utime):
     return (time.strftime( '%H:%M:%S', time.localtime(utime/1000000)))
 
-def read_tags():
+def read_tags( tagfile ):
     my_tags = {}
     with open( tagfile, "r" ) as csvfile:
         csvreader = csv.reader( csvfile, delimiter=',' )
@@ -148,6 +148,10 @@ def parse_line(line):
             pprint (entry)
         reads.append(entry)
 
+def get_current (file):
+    current = json.load( open(file, "r") )
+    return "../" + current["file"]
+
 def print_line(line):
     pprint (line)
 
@@ -172,17 +176,21 @@ form = cgi.FieldStorage()
 current_date=datetime.now().strftime('%Y%m%d')
 date = form.getvalue('date', current_date)
 tagfilter = form.getvalue('tagfilter', "^0000....")
+debug = form.getvalue('debug', False)
 #date = os.getenv('date', current_date)
 logfile = log_dir + date + '.txt'
-html_header()
+current_file = "../web/ilmo/current.json"
 
+html_header()
 if (debug):
    print ("Trying to open: ", logfile)
 
 if (os.path.exists(logfile)):
     if (debug):
         print ("Loysin logfilen: ", logfile)
-    tags = read_tags()
+    current = get_current(current_file)
+    ilmot = "../web/ilmo/ilmot/" + current
+    tags = read_tags( ilmot )
     with open(logfile, 'r') as contents:
         for line in contents:
             parse_line(line)
