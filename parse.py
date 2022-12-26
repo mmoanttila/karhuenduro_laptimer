@@ -13,6 +13,7 @@ import csv
 import re
 import os
 import sys
+import laptimer
 
 # Some settings for code
 startports = [1, 3]
@@ -254,29 +255,12 @@ def get_current (file):
     current = json.load( open(file, "r") )
     return "../" + current["file"]
 
-def print_tag (tag):
-    if tags.has_key (tag):
-        return tags[tag]
-    else:
-        return tag
-
-def time_to_localtime (utime):
-    return (time.strftime( '%H:%M:%S', time.localtime(utime/1000000)))
-
-def time_to_localtime_debug (utime):
-    return (time.strftime( '%F %H:%M:%S', time.localtime(utime/1000000)))
-
 def newtime_to_ctime (utime):
     strtime = unicodedata.normalize('NFKD', utime).encode('ascii','ignore')
     # print ("Tulkitaan ", strtime)
     # pprint (time.mktime(time.strptime(strtime,"%Y-%m-%dT%H:%M:%S.%fZ")))
     return (time.mktime(time.strptime(strtime,"%Y-%m-%dT%H:%M:%S.%fZ")))
     # 2019-03-24T20:19:03.872083Z
-
-def double_print (FO, line):
-    print (line)
-    if ( FO ):
-        FO.write (line + "\n")
 
     
 
@@ -337,17 +321,17 @@ for line in contents:
         if (debug):
             print ("Loysin EPC:n ", epc)
             print ("Testaan onko ", read['antennaPort'], " in ", startports)
-            print ("  ja onko ", read['firstSeenTimestamp'], "(", time_to_localtime_debug(read['firstSeenTimestamp']), ") >", race_start, " (", time_to_localtime_debug(race_start), ")" )
-            print ("  ja onko ", read['firstSeenTimestamp'], "(", time_to_localtime_debug(read['firstSeenTimestamp']), ") <", race_end, " (", time_to_localtime_debug(race_end), ")" )
+            print ("  ja onko ", read['firstSeenTimestamp'], "(", laptimer.time_to_localdate(read['firstSeenTimestamp']), ") >", race_start, " (", laptimer.time_to_localdate(race_start), ")" )
+            print ("  ja onko ", read['firstSeenTimestamp'], "(", laptimer.time_to_localdate(read['firstSeenTimestamp']), ") <", race_end, " (", laptimer.time_to_localdate(race_end), ")" )
         if (read['antennaPort'] in startports and read['firstSeenTimestamp'] > race_start and read['firstSeenTimestamp'] < race_end):
             # If starting with starttime (mode=laptime2), we should add one timestamp for that
             if ( mode == 'laptime2' and len (starttimes[epc]) == 0 ):
                 if (debug):
-                    print ("Lisataan lahtoleima := start_time ", time_to_localtime_debug(race_start) )
+                    print ("Lisataan lahtoleima := start_time ", laptimer.time_to_localdate(race_start) )
                 starttimes[epc].append(race_start)
 
             if (debug):
-                print ("Lahto: ", epc, " ", time_to_localtime(read['firstSeenTimestamp']) )
+                print ("Lahto: ", epc, " ", laptimer.time_to_localtime(read['firstSeenTimestamp']) )
             starttimes[epc].append(read['firstSeenTimestamp'])
             # We try to figure if we have end-tags at all
             if ( len(starttimes[epc]) > 1 and len(endtimes[epc]) == 0):
@@ -359,7 +343,7 @@ for line in contents:
 
         elif (read['antennaPort'] in endports ):
             if (debug):
-                print ("Maali: ", epc, " ", time_to_localtime(read['firstSeenTimestamp']) )
+                print ("Maali: ", epc, " ", laptimer.time_to_localtime(read['firstSeenTimestamp']) )
                 # print ("Maali: ", read['epc'], " ", newtime_to_ctime(read['firstSeenTimestamp']) )
             endtimes[epc].append(read['firstSeenTimestamp'])
             # Find last start-timestamp for current epc to calculate laptime
@@ -372,7 +356,7 @@ for line in contents:
                 laptimes[epc].append(read['firstSeenTimestamp']-starttimes[epc].pop() )
             except IndexError:
                 if (debug):
-                    print ("Loytyi ylimaarainen maalileimaus: ", time_to_localtime(read['firstSeenTimestamp']) )
+                    print ("Loytyi ylimaarainen maalileimaus: ", laptimer.time_to_localtime(read['firstSeenTimestamp']) )
                 continue
             if (len (laptimes[epc])) > maxlaps:
                 maxlaps += 1
@@ -419,26 +403,26 @@ if (use_cgi):
             FH = False
     else:
         FH = False
-    double_print (FH,"<!-- " + os.environ['REQUEST_URI'] + " -->\n")
-    double_print (FH, "<h2>Tulokset " + date[6:8] + "." + date[4:6] + "." + date[0:4] + "</h2>")
-    double_print (FH, "<h4>" + output_file_name + "</h4>")
-    double_print (FH, "<table border=\"1\">")
+    laptimer.double_print (FH,"<!-- " + os.environ['REQUEST_URI'] + " -->\n")
+    laptimer.double_print (FH, "<h2>Tulokset " + date[6:8] + "." + date[4:6] + "." + date[0:4] + "</h2>")
+    laptimer.double_print (FH, "<h4>" + output_file_name + "</h4>")
+    laptimer.double_print (FH, "<table border=\"1\">")
     my_number=1
     for epc, mylaps, mytotal in results_sorted:
-        double_print (FH, "  <tr>")
-        double_print (FH, "    <td colspan=\"3\">" + str(my_number) + ". " + print_tag( epc ) + "</td>")
-        double_print (FH, "    <td>" + str(mylaps) + " kierrosta</td>")
-        double_print (FH, "    <td colspan=\"" + str(maxlaps-4) + "\">Total: " + print_laptime( mytotal )[:-3] + "</td>")
-        double_print (FH, "  </tr>")
-        double_print (FH, "  <tr>")
+        laptimer.double_print (FH, "  <tr>")
+        laptimer.double_print (FH, "    <td colspan=\"3\">" + str(my_number) + ". " + laptimer.print_tag( epc ) + "</td>")
+        laptimer.double_print (FH, "    <td>" + str(mylaps) + " kierrosta</td>")
+        laptimer.double_print (FH, "    <td colspan=\"" + str(maxlaps-4) + "\">Total: " + laptimer.print_laptime( mytotal )[:-3] + "</td>")
+        laptimer.double_print (FH, "  </tr>")
+        laptimer.double_print (FH, "  <tr>")
         my_number=my_number+1
         for col in range(offset,len(laptimes[epc])):
             if ( (col == len(laptimes[epc])-1 ) ):
-                double_print (FH, "    <td class=\"laptime\" colspan=\"" + str(maxlaps-col) + "\">" + print_laptime( laptimes[epc][col] )[:-3] + "</td>")
+                laptimer.double_print (FH, "    <td class=\"laptime\" colspan=\"" + str(maxlaps-col) + "\">" + laptimer.print_laptime( laptimes[epc][col] )[:-3] + "</td>")
             else: 
-                double_print (FH, "    <td class=\"laptime\">" + print_laptime( laptimes[epc][col] )[:-3] + "</td>")
-        double_print (FH, "  </tr>")
-    double_print (FH, "</table>")
+                laptimer.double_print (FH, "    <td class=\"laptime\">" + laptimer.print_laptime( laptimes[epc][col] )[:-3] + "</td>")
+        laptimer.double_print (FH, "  </tr>")
+    laptimer.double_print (FH, "</table>")
 else:
     print ("Kierrosajat")
     my_number=1
@@ -448,15 +432,15 @@ else:
             print ("Trying to print epc " + epc + " with laps=" + str(mylaps))
         print (str(my_number) + ". ")
         my_number=my_number+1
-        print (print_tag(epc) + ": " + str(mylaps) + " kierrosta Total: " + print_laptime( mytotal )[:-3])
+        print (laptimer.print_tag(epc) + ": " + str(mylaps) + " kierrosta Total: " + laptimer.print_laptime( mytotal )[:-3])
         for col in range(offset,len(laptimes[epc])):
             print ("    ", print_laptime( laptimes[epc][col] )[:-3], "secs")
     
 if (use_cgi):
     if ( static_output == True ):
         print ("<br>\n<hr>\n<a href=\"/tulokset/" + output_file_name + "\">Valmiit tulokset</a>")
-    double_print (FH, "<P><I>Last updated: " + current_time + "</I></P>")
-    double_print (FH, "</html>")
+    laptimer.double_print (FH, "<P><I>Last updated: " + current_time + "</I></P>")
+    laptimer.double_print (FH, "</html>")
     if (FH):
         FH.close()
 #print (type(parsed['tag_reads']))
