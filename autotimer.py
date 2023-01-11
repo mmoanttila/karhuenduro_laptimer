@@ -11,6 +11,7 @@ import time
 #		req = urllib2.Request(url=myUrl)
 #	except urllib2.HTTPError:
 #		pass
+
 debug = True
 
 if (debug):
