@@ -10,6 +10,7 @@ import unicodedata
 from collections import defaultdict
 from datetime import timedelta, datetime
 from operator import itemgetter
+import subprocess
 import csv
 import re
 import os
@@ -51,6 +52,7 @@ results = []
 filter_tags = False
 static_output = False
 use_static_numbers = False
+auto_timer = False
 
 # check for debug cmd parameter
 if (len(sys.argv) > 1 and '-d' in sys.argv):
@@ -469,7 +471,13 @@ if use_cgi:
     double_print(FH, "</html>")
     if FH:
         FH.close()
-#print(type(parsed['tag_reads']))
+    if auto_timer:
+        # Starting timer for three hours
+        p = subprocess.Popen([sys.executable, './autotimer.py'],
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.STDOUT)
+
+#print (type(parsed['tag_reads']))
 #with open('log.txt') as f:
 #    data = json.load(f)
 
