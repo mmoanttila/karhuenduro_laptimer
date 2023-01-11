@@ -9,6 +9,7 @@ import unicodedata
 from collections import defaultdict
 from datetime import timedelta, datetime
 from operator import itemgetter
+import subprocess
 import csv
 import re
 import os
@@ -459,6 +460,12 @@ if (use_cgi):
     double_print (FH, "</html>")
     if (FH):
         FH.close()
+    if ( auto_timer == True ):
+        # Starting timer for three hours
+        p = subprocess.Popen([sys.executable, './autotimer.py'],
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.STDOUT)
+
 #print (type(parsed['tag_reads']))
 #with open('log.txt') as f:
 #    data = json.load(f)
