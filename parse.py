@@ -53,7 +53,7 @@ use_static_numbers = False
 
 # check for debug cmd parameter
 if ( len(sys.argv) > 1 and '-d' in sys.argv ):
-    print "Debugging Enabled!"
+    print ("Debugging Enabled!")
     debug = True
 else:
     debug = False
@@ -61,20 +61,20 @@ else:
 # If called as CGI, we'll use html output
 if "HTTP_USER_AGENT" in os.environ:
     use_cgi = True
-    print "Content-type: text/html"
-    print
-    print '<html>'
-    print '<head>'
-    print '  <title>Kierrosajat</title>'
-    print '  <meta charset="UTF-8">'
-    print '  <meta http-equiv="refresh" content="300">'
-    print '</head>'
-    print '<style>'
-    print '  table {border-collapse: collapse;}'
-    print '  tr:nth-child(odd) {background-color: #f2f2f2;}'
-    print '  td.laptime { padding: 5px; }'
-    print '</style>'
-    print '<body><pre>'
+    print ("Content-type: text/html")
+    print ()
+    print ('<html>')
+    print ('<head>')
+    print ('  <title>Kierrosajat</title>')
+    print ('  <meta charset="UTF-8">')
+    print ('  <meta http-equiv="refresh" content="300">')
+    print ('</head>')
+    print ('<style>')
+    print ('  table {border-collapse: collapse;}')
+    print ('  tr:nth-child(odd) {background-color: #f2f2f2;}')
+    print ('  td.laptime { padding: 5px; }')
+    print ('</style>')
+    print ('<body><pre>')
     import cgi, cgitb
     # Enable CGI-debugging output to html
     cgitb.enable()
@@ -111,8 +111,8 @@ if "HTTP_USER_AGENT" in os.environ:
         defaultfilename = "tulokset-" + date + ".html"
         output_file_name = form.getvalue('output_file_name', defaultfilename)
         # Lets make sure we have correct ending.
-        if (output_file_name[-5:] <> ".html" ):
-            output_file_name=output_file_name + ".html"
+        if (output_file_name[ -5:] != ".html" ):
+            output_file_name = output_file_name + ".html"
 
     if (debug):
         print ("Kaytetty date: " + date)
@@ -188,8 +188,8 @@ def print_laptime (usec):
     if (debug):
         td = timedelta( milliseconds=usec/1000 )
         secs,msecs = int(td.total_seconds()),td.total_seconds()-int(td.total_seconds())
-        print "Converting", usec, "usec to ", round( td.total_seconds(),1) , "secs."
-        print "Also secs=", secs, "msecs=", msecs
+        print ("Converting", usec, "usec to ", round( td.total_seconds(),1) , "secs.")
+        print ("Also secs=", secs, "msecs=", msecs)
     return str( timedelta( milliseconds=usec//1000 ) )
 
 def read_tags (csvfile):
@@ -205,7 +205,7 @@ def read_tags (csvfile):
         csvreader = csv.reader( FD, delimiter=',' )
         for row in csvreader:
             if (debug):
-                print "Luin tagin: " + row[2] + " = " + row[1]
+                print ("Luin tagin: " + row[2] + " = " + row[1])
             if ( len(row) < 3 ): # Adding number to name if it exists on third column
                 continue
             my_tags[row[2]] = row[1] + " | " + row[0]
@@ -244,7 +244,7 @@ def read_tags_cached (tagfile):
     csvreader = csv.reader( csvfile, delimiter=',' )
     for row in csvreader:
         if (debug):
-            print "Luin tagin: " + row[2] + " = " + row[1]
+            print ("Luin tagin: " + row[2] + " = " + row[1])
         if ( len(row) < 3 ):
             continue
         my_tags[row[2]] = row[1] + " | " + row[0]
@@ -383,7 +383,7 @@ for line in contents:
 # Yritetaan laskea vahan statistiikkaa tuloksista.
 for epc, times in laptimes.iteritems():
     # Jos patka-ajat ja number of laps given
-    if (numlaps <> 0 and len(times) > numlaps+offset):
+    if (numlaps != 0 and len(times) > numlaps+offset):
         if (debug):
             print ("Tagilla " + epc + " on ylimaaraisia kierroksia " + str(len(times)) )
         results.append ( (epc, numlaps, sum(times[offset:(numlaps+offset)]) ) ) # Vain ekat numlaps kierrosta vaikuttavat tuloksiin
@@ -406,10 +406,10 @@ results_sorted = sorted (s, key=itemgetter(1), reverse=True) # Sort on primary k
 if (debug):
     print ("Sorttauksen tulokset:")
     pprint (results_sorted)
-    print "Ajettu", maxlaps, "kierrosta."
+    print ("Ajettu", maxlaps, "kierrosta.")
 
 if (use_cgi):
-    print "</pre>"
+    print ("</pre>")
     if (static_output):
         try: 
             FH = open (output_dir + output_file_name, "w")
@@ -440,7 +440,7 @@ if (use_cgi):
         double_print (FH, "  </tr>")
     double_print (FH, "</table>")
 else:
-    print "Kierrosajat"
+    print ("Kierrosajat")
     my_number=1
     for epc, mylaps, mytotal in results_sorted:
         #times = laptimes[epc]
@@ -450,7 +450,7 @@ else:
         my_number=my_number+1
         print (print_tag(epc) + ": " + str(mylaps) + " kierrosta Total: " + print_laptime( mytotal )[:-3])
         for col in range(offset,len(laptimes[epc])):
-            print "    ", print_laptime( laptimes[epc][col] )[:-3], "secs"
+            print ("    ", print_laptime( laptimes[epc][col] )[:-3], "secs")
     
 if (use_cgi):
     if ( static_output == True ):
