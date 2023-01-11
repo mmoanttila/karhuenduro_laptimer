@@ -14,8 +14,8 @@ def print_laptime (usec):
     if (debug):
         td = timedelta( milliseconds=usec/1000 )
         secs,msecs = int(td.total_seconds()),td.total_seconds()-int(td.total_seconds())
-        print "Converting", usec, "usec to ", round( td.total_seconds(),1) , "secs."
-        print "Also secs=", secs, "msecs=", msecs
+        print ("Converting", usec, "usec to ", round( td.total_seconds(),1) , "secs.")
+        print ("Also secs=", secs, "msecs=", msecs)
     return str( timedelta( milliseconds=usec//1000 ) )
 
 def print_tag (tag):
