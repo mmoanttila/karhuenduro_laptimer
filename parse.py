@@ -3,7 +3,7 @@
 import json
 import time
 from pprint import pprint
-import urllib2
+import urllib
 #from urllib import request
 import unicodedata
 from collections import defaultdict
@@ -146,7 +146,7 @@ else:
 #    if (debug):
 #        print ("Generating url = " + log_url + date + ".txt")
 #    url = log_url + date + ".txt"
-#    contents = urllib2.urlopen( url )
+#    contents = urllib.request.urlopen( url )
 #    if (debug):
 #        print ("Logfile last modified :" + contents.headers['last-modified'] )
 #except IOError:
@@ -165,7 +165,7 @@ else:
         if (debug):
             print ("Generating url = " + log_url + date + ".txt")
         url = log_url + date + ".txt"
-        contents = urllib2.urlopen( url )
+        contents = urllib.request.urlopen( url )
     except IOError:
         print ("Ei saatu avattu timestamppeja, lopetetaan")
         sys.exit(99)
@@ -217,7 +217,7 @@ def read_tags_cached (tagfile):
         try:
             if (debug):
                 print ("Trying to read .csv from " + csv_url )
-            csvfile = urllib2.urlopen( csv_url )
+            csvfile = urllib.request.urlopen( csv_url )
         # if (debug):
         #     print ("CSV last modified :" + csvfile.headers['last-modified'] )
 
