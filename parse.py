@@ -255,7 +255,11 @@ def get_current (file):
     return "../" + current["file"]
 
 def print_tag (tag):
-    if tags.has_key (tag):
+    """ If we haven't read any names for tags (=tags is empty) return just tag
+    If our tags-list contains name for tag, then return it otherwise return just tag-number """
+    if not tags:
+        return tag
+    if tag in tags:
         return tags[tag]
     else:
         return tag
@@ -305,7 +309,7 @@ tags = read_tags( ilmot )
 
 for line in contents:
     # First let's skip logfile timestamp
-    jsonline=line.split(",",2)
+    jsonline = line.split(",", maxsplit=2)
     if (debug):
         print ("Luen rivia: ", jsonline[2])
     # Let's read json content to list of dicts
@@ -328,10 +332,10 @@ for line in contents:
             if (debug):
                 print ("Skippaan HeartBeatin.")
             continue
-        epc = unicodedata.normalize('NFKD', read['epc']).encode('ascii','ignore')
+        epc = str(unicodedata.normalize('NFKD', read['epc']).encode('ascii','ignore'))
         allowed_tag = re.search(tag_filter, epc)
         if (not allowed_tag and filter_tags):
-            if (debug):
+            if debug:
                 print (epc, " ei ole meidan tagi.")
             continue
         if (debug):
