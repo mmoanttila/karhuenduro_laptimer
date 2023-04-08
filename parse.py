@@ -385,7 +385,8 @@ for line in contents:
                 print ("Ei huomioitavaa rivilla")
 
 # Yritetaan laskea vahan statistiikkaa tuloksista.
-for epc, times in laptimes.iteritems():
+#for epc, times in laptimes.iteritems():
+for epc, times in laptimes.items():
     # Jos patka-ajat ja number of laps given
     if (numlaps != 0 and len(times) > numlaps+offset):
         if (debug):
