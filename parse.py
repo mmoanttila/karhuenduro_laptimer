@@ -3,7 +3,7 @@
 import json
 import time
 from pprint import pprint
-import urllib
+import urllib.request
 #from urllib import request
 import unicodedata
 from collections import defaultdict
