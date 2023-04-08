@@ -257,12 +257,10 @@ def get_current (file):
 def print_tag (tag):
     """ If we haven't read any names for tags (=tags is empty) return just tag
     If our tags-list contains name for tag, then return it otherwise return just tag-number """
-    if not tags:
-        return tag
-    if tag in tags:
-        return tags[tag]
-    else:
-        return tag
+    if tags:
+        if tag in tags:
+            return tags[tag]
+    return tag
 
 def time_to_localtime (utime):
     return (time.strftime( '%H:%M:%S', time.localtime(utime/1000000)))
