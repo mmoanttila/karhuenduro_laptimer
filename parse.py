@@ -112,15 +112,15 @@ if "HTTP_USER_AGENT" in os.environ:
         defaultfilename = "tulokset-" + date + ".html"
         output_file_name = form.getvalue('output_file_name', defaultfilename)
         # Lets make sure we have correct ending.
-        if output_file_name[ -5:] != ".html" ):
+        if output_file_name[ -5:] != ".html":
             output_file_name = output_file_name + ".html"
 
-    if (debug):
+    if debug:
         print("Kaytetty date: " + date)
         print("Laskentatapa: " + mode)
         print("Kierrosmaara: " + str(numlaps))
         print("Lampparit: " + str(offset))
-        if (static_output):
+        if static_output:
             print("Tallennan lopulliset tulokset nimellä" + output_file_name)
         else:
             print("En tallenna lopullisia tuloksia")
@@ -135,7 +135,7 @@ else:
     race_start = int( time.mktime( time.strptime( date + " " + os.getenv('start','10:00'), "%Y%m%d %H:%M")) ) * 1000000
     numlaps = int(os.getenv('laps', 0))
     offset = int(os.getenv('offset', 0))
-    if (debug): 
+    if debug: 
         print("Converting :" + date + " " + os.getenv('start','10:00') + " as %Y%m%d %H:%M")
         print("Race start time: " + str(race_start))
         print("Mode: " + mode)
@@ -144,18 +144,18 @@ else:
     race_end = int( time.mktime( time.strptime( date + " " + os.getenv('end','23:59'), "%Y%m%d %H:%M")) ) * 1000000
 
 #try:
-#    if (debug):
+#    if debug:
 #        print("Generating url = " + log_url + date + ".txt")
 #    url = log_url + date + ".txt"
 #    contents = urllib.request.urlopen( url )
-#    if (debug):
+#    if debug:
 #        print("Logfile last modified :" + contents.headers['last-modified'] )
 #except IOError:
 #    print("URLia ", url, " ei onnistuttu resolvoimaan!")
 #    print("Tai sitten osoite ei vaan vastaa!")
 
 logfile = log_dir + date + ".txt"
-if (debug):
+if debug:
     print("parsing logfile = " + log_dir + date + ".txt")
 
 if (os.path.exists(logfile)):
@@ -163,7 +163,7 @@ if (os.path.exists(logfile)):
 else:
     print("Couldn't open logfile: " + logfile)
     try:
-        if (debug):
+        if debug:
             print("Generating url = " + log_url + date + ".txt")
         url = log_url + date + ".txt"
         contents = urllib.request.urlopen( url )
@@ -171,7 +171,7 @@ else:
         print("Ei saatu avattu timestamppeja, lopetetaan")
         sys.exit(99)
 
-#if (debug):
+#if debug:
 #    print(contents.info())
 
 data = []
@@ -179,14 +179,14 @@ maxlaps = 0
 
 def send_csvfile (data, filename="tulokset.csv"):
     """Will send csv-file to browser."""
-    if (debug):
+    if debug:
         print("Trying to return csv-file to browser as " + filename )
     # First suitable headers
     print("Content-Type:text/csv; name=\"" + filename + "\"\r\n")
     print("Content-Disposition: attachment; filename=\"" + filename + "\"\r\n\n")
 
 def print_laptime (usec):
-    if (debug):
+    if debug:
         td = timedelta( milliseconds=usec/1000 )
         secs,msecs = int(td.total_seconds()),td.total_seconds()-int(td.total_seconds())
         print("Converting", usec, "usec to ", round( td.total_seconds(),1) , "secs.")
@@ -196,16 +196,16 @@ def print_laptime (usec):
 def read_tags (csvfile):
     """ Will read tags and names from given csv-file """
     if ( os.path.exists (csvfile) ):
-        if (debug):
+        if debug:
             print("Reading tags from csvfile: " + csvfile)
 
         FD = open(csvfile, "r", encoding="utf-8")
         my_tags = {}
-        if (debug):
+        if debug:
             print("Parsin tagilistaa CSV:sta")
         csvreader = csv.reader( FD, delimiter=',' )
         for row in csvreader:
-            if (debug):
+            if debug:
                 print("Luin tagin: ", row[2], "[", type(row[2]), "] = ", row[1], "[", type(row[1]), "]")
             if ( len(row) < 3 ): # Adding number to name if it exists on third column
                 continue
@@ -216,10 +216,10 @@ def read_tags_cached (tagfile):
     # only use local-cache, if it's older than one 10 minutes
     if ( not os.path.exists (tagfile ) or time.time() - os.path.getmtime (tagfile) > 600 ):
         try:
-            if (debug):
+            if debug:
                 print("Trying to read .csv from " + csv_url )
             csvfile = urllib.request.urlopen( csv_url )
-        # if (debug):
+        # if debug:
         #     print("CSV last modified :" + csvfile.headers['last-modified'] )
 
         except IOError:
@@ -228,23 +228,23 @@ def read_tags_cached (tagfile):
             if (os.path.exists(tagfile)):
                 print("Kaytetaan paikallista kopioita: " , tagfile)
                 csvfile = open(tagfile, "r")
-        if (debug): 
+        if debug: 
             print("Updating local tags.csv cache")
         with open(tagfile, 'wb') as csvcache:
             csvwriter = csv.writer(csvcache, delimiter=',', quoting=csv.QUOTE_MINIMAL)
             csvreader = csv.reader( csvfile, delimiter=',' )
             for row in csvreader:
                 csvwriter.writerow(row)
-    if (debug):
+    if debug:
         print("Using local tag-csv-cache: " + tagfile)
     csvfile = open(tagfile, "r")
     my_tags = {}
     # with open( tagfile ) as csvfile:
-    if (debug):
+    if debug:
         print("Parsin tagilistaa CSV:sta")
     csvreader = csv.reader( csvfile, delimiter=',' )
     for row in csvreader:
-        if (debug):
+        if debug:
             print("Luin tagin: " + row[2] + " = " + row[1])
         if ( len(row) < 3 ):
             continue
@@ -283,7 +283,7 @@ def double_print (FO, line):
 
     
 
-if (debug):
+if debug:
     print("Yritän lukea tapahtuma tietoja tiedostosta: ", current_file, ".\n")
 current = get_current(current_file)
 
@@ -292,12 +292,12 @@ if (use_static_numbers == True):
     ilmot = static_numbers
     # ../web/ilmo/ilmot/static.csv
     # csv_url = "https://karhuenduro.fi/ilmo/ilmot/" + "static.csv"
-    if (debug):
+    if debug:
         print("Haluaisin ottaa kiinteät numerot: " + ilmot)
 else:
     # csv_url = "https://karhuenduro.fi/ilmo/ilmot/" + current
     ilmot = "../web/ilmo/ilmot/" + current
-    if (debug):
+    if debug:
         print("Haluaisin ottaa nykyiset ilmoittautuneet: " + ilmot)
 
 tags = read_tags( ilmot )
@@ -309,26 +309,26 @@ tags = read_tags( ilmot )
 for line in contents:
     # First let's skip logfile timestamp
     jsonline = line.split(",", maxsplit=2)
-    if (debug):
+    if debug:
         print("Luen rivia: ", jsonline[2])
     # Let's read json content to list of dicts
     try:
         parsed = json.loads(jsonline[2])
-        if (debug):
+        if debug:
             print("Loysin json:ia rivilta:", parsed)
     except ValueError:
-        if (debug):
+        if debug:
             print("Rivilta: ", line, "\n")
             print("ei onnistuttu parsimaan json:ia.")
 
     # We might have several tagreads per line
     # That's why we loop
     for read in parsed['tag_reads']:
-        if (debug):
+        if debug:
             print("Parsin leimausta:ta: ", read)
         # Skip heartbeats
         if (read['isHeartBeat']):
-            if (debug):
+            if debug:
                 print("Skippaan HeartBeatin.")
             continue
         epc = read['epc']
@@ -338,7 +338,7 @@ for line in contents:
                 print(epc, "[", type(epc), "] ei ole meidan tagi.")
                 print("allowed_tag: ", type(allowed_tag))
             continue
-        if (debug):
+        if debug:
             print("Loysin EPC:n ", epc)
             print("Testaan onko ", read['antennaPort'], " in ", startports)
             print("  ja onko ", read['firstSeenTimestamp'], "(", time_to_localtime_debug(read['firstSeenTimestamp']), ") >", race_start, " (", time_to_localtime_debug(race_start), ")" )
@@ -346,23 +346,23 @@ for line in contents:
         if (read['antennaPort'] in startports and read['firstSeenTimestamp'] > race_start and read['firstSeenTimestamp'] < race_end):
             # If starting with starttime (mode=laptime2), we should add one timestamp for that
             if ( mode == 'laptime2' and len (starttimes[epc]) == 0 ):
-                if (debug):
+                if debug:
                     print("Lisataan lahtoleima := start_time ", time_to_localtime_debug(race_start) )
                 starttimes[epc].append(race_start)
 
-            if (debug):
+            if debug:
                 print("Lahto: ", epc, " ", time_to_localtime(read['firstSeenTimestamp']) )
             starttimes[epc].append(read['firstSeenTimestamp'])
             # We try to figure if we have end-tags at all
             if ( len(starttimes[epc]) > 1 and len(endtimes[epc]) == 0):
-                if (debug):
+                if debug:
                     print("Laptime for ", epc, " : ", (read['firstSeenTimestamp'] - starttimes[epc][-2])/1000000, " secs") 
                 laptimes[epc].append(read['firstSeenTimestamp'] - starttimes[epc][-2]) 
                 if (len (laptimes[epc])) > maxlaps:
                     maxlaps += 1
 
         elif (read['antennaPort'] in endports ):
-            if (debug):
+            if debug:
                 print("Maali: ", epc, " ", time_to_localtime(read['firstSeenTimestamp']) )
                 # print("Maali: ", read['epc'], " ", newtime_to_ctime(read['firstSeenTimestamp']) )
             endtimes[epc].append(read['firstSeenTimestamp'])
@@ -371,17 +371,17 @@ for line in contents:
             #pprint(starttimes[read['epc']][-1])
             # Assuming last starttime is for current leg
             try:
-                if (debug):
+                if debug:
                     print("Laptime for ", epc, " : ", (read['firstSeenTimestamp'] - starttimes[epc][-1])/1000000, " secs") 
                 laptimes[epc].append(read['firstSeenTimestamp']-starttimes[epc].pop() )
             except IndexError:
-                if (debug):
+                if debug:
                     print("Loytyi ylimaarainen maalileimaus: ", time_to_localtime(read['firstSeenTimestamp']) )
                 continue
             if (len (laptimes[epc])) > maxlaps:
                 maxlaps += 1
         else:
-            if (debug):
+            if debug:
                 print("Ei huomioitavaa rivilla")
 
 # Yritetaan laskea vahan statistiikkaa tuloksista.
@@ -389,16 +389,16 @@ for line in contents:
 for epc, times in laptimes.items():
     # Jos patka-ajat ja number of laps given
     if (numlaps != 0 and len(times) > numlaps+offset):
-        if (debug):
+        if debug:
             print("Tagilla " + epc + " on ylimaaraisia kierroksia " + str(len(times)) )
         results.append ( (epc, numlaps, sum(times[offset:(numlaps+offset)]) ) ) # Vain ekat numlaps kierrosta vaikuttavat tuloksiin
     elif ( (len(times) - offset) < 1 ):
-        if (debug):
+        if debug:
             print("Tagilla " + epc + " on pelkka lammittelykierros.")
         results.append ( (epc, 0, sum(times[offset:]) ) ) # List of tuples (epc, laps, total)
     else:
         results.append ( (epc, len(times)-offset, sum(times[offset:]) ) ) # List of tuples (epc, laps, total)
-    if (debug):
+    if debug:
         print(epc + ": laps=" + str(len (times)-offset) + " total=" + str(sum(times)) )
 
 # results =: list of:
@@ -408,7 +408,7 @@ for epc, times in laptimes.items():
 s = sorted (results, key=itemgetter(2)) # sort on secondary key
 results_sorted = sorted (s, key=itemgetter(1), reverse=True) # Sort on primary key descending
 
-if (debug):
+if debug:
     print("Sorttauksen tulokset:")
     pprint(results_sorted)
     print("Ajettu", maxlaps, "kierrosta.")
@@ -449,7 +449,7 @@ else:
     my_number=1
     for epc, mylaps, mytotal in results_sorted:
         #times = laptimes[epc]
-        if (debug):
+        if debug:
             print("Trying to print epc " + epc + " with laps=" + str(mylaps))
         print(str(my_number) + ". ")
         my_number=my_number+1
