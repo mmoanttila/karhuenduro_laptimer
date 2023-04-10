@@ -198,14 +198,14 @@ def read_tags (csvfile):
         if (debug):
             print ("Reading tags from csvfile: " + csvfile)
 
-        FD = open(csvfile, "r")
-        my_tags ={}
+        FD = open(csvfile, "r", encoding="utf-8")
+        my_tags = {}
         if (debug):
             print ("Parsin tagilistaa CSV:sta")
         csvreader = csv.reader( FD, delimiter=',' )
         for row in csvreader:
             if (debug):
-                print ("Luin tagin: " + row[2] + " = " + row[1])
+                print ("Luin tagin: ", row[2], "[", type(row[2]), "] = ", row[1], "[", type(row[1]), "]")
             if ( len(row) < 3 ): # Adding number to name if it exists on third column
                 continue
             my_tags[row[2]] = row[1] + " | " + row[0]
@@ -237,7 +237,7 @@ def read_tags_cached (tagfile):
     if (debug):
         print ("Using local tag-csv-cache: " + tagfile)
     csvfile = open(tagfile, "r")
-    my_tags ={}
+    my_tags = {}
     # with open( tagfile ) as csvfile:
     if (debug):
         print ("Parsin tagilistaa CSV:sta")
@@ -312,7 +312,7 @@ for line in contents:
         print ("Luen rivia: ", jsonline[2])
     # Let's read json content to list of dicts
     try:
-        parsed=json.loads(jsonline[2])
+        parsed = json.loads(jsonline[2])
         if (debug):
             print ("Loysin json:ia rivilta:", parsed)
     except ValueError:
@@ -330,11 +330,12 @@ for line in contents:
             if (debug):
                 print ("Skippaan HeartBeatin.")
             continue
-        epc = str(unicodedata.normalize('NFKD', read['epc']).encode('ascii','ignore'))
+        epc = read['epc']
         allowed_tag = re.search(tag_filter, epc)
         if (not allowed_tag and filter_tags):
             if debug:
-                print (epc, " ei ole meidan tagi.")
+                print (epc, "[", type(epc), "] ei ole meidan tagi.")
+                print ("allowed_tag: ", type(allowed_tag))
             continue
         if (debug):
             print ("Loysin EPC:n ", epc)
