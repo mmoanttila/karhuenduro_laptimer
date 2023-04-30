@@ -4,6 +4,14 @@ This is subprogram to update results-page for some time (defaulting to 3h) after
 """
 
 import time
+#import urllib
+
+#def loadWebPage(myUrl):
+#    try:
+#        req = urllib.Request(url=myUrl)
+#        except urllib.HTTPError:
+#        pass
+
 debug = True
 
 if (debug):
