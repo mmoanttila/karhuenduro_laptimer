@@ -300,9 +300,9 @@ current = get_current(current_file)
 if use_static_numbers:
     if static_list == "static":
         ilmot = static_numbers
-    else if static_list == "sarjakrossit":
+    elif static_list == "sarjakrossit":
         ilmot = sarjakrossit_numbers
-    else if static_list == "kanada":
+    elif static_list == "kanada":
         ilmot = kanada_numbers
     # ../web/ilmo/ilmot/static.csv
     # csv_url = "https://karhuenduro.fi/ilmo/ilmot/" + "static.csv"
