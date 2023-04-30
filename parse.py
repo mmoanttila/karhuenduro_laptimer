@@ -27,6 +27,9 @@ output_dir = "../web/tulokset/"
 output_file_name = ""
 current_file = "../web/ilmo/current.json"
 static_numbers = "../web/ilmo/ilmot/static.csv"
+static_list = ""
+sarjakrossit_numbers = "../web/ilmo/ilmot/sarjakrossit.csv"
+kanada_numbers = "../web/ilmo/ilmot/kanada.csv"
 
 # End of settings
 
@@ -104,6 +107,7 @@ if "HTTP_USER_AGENT" in os.environ:
     my_static = form.getvalue('static_numbers', 'False')
     if my_static in('True', 'true', 1):
         use_static_numbers = True
+        static_list = form.getvalue('ajajalista')
 
     my_static_output = form.getvalue('static_output', 'False')
     if my_static_output in ('True', 'true', 1):
@@ -294,7 +298,12 @@ current = get_current(current_file)
 
 # csv_url = "https://karhuenduro.fi/ilmo/ilmot/jarilan-sprint.csv"
 if use_static_numbers:
-    ilmot = static_numbers
+    if static_list == "static":
+        ilmot = static_numbers
+    else if static_list == "sarjakrossit":
+        ilmot = sarjakrossit_numbers
+    else if static_list == "kanada":
+        ilmot = kanada_numbers
     # ../web/ilmo/ilmot/static.csv
     # csv_url = "https://karhuenduro.fi/ilmo/ilmot/" + "static.csv"
     if debug:
