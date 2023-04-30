@@ -39,7 +39,7 @@ Käytä kiinteitä numeroita:
 	<input type="checkbox" name="static_numbers" id="static" value="True" onchange="displayQuestion(this.value)"/><br>
 <div id="ajajalistat" style="display:none;">
 Käytettävä ajajalista:<br>
-    <select name="ajajalista">
+    <select name="driverlist">
         <option selected value="static">Normikuskit</option>
         <option value="sarjakrossit">Sarjakrossit</option>
         <option value="kanada">Muu</option>

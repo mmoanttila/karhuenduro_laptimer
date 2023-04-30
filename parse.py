@@ -107,7 +107,7 @@ if "HTTP_USER_AGENT" in os.environ:
     my_static = form.getvalue('static_numbers', 'False')
     if my_static in('True', 'true', 1):
         use_static_numbers = True
-        static_list = form.getvalue('ajajalista')
+        static_list = form.getvalue('driverlist')
 
     my_static_output = form.getvalue('static_output', 'False')
     if my_static_output in ('True', 'true', 1):
