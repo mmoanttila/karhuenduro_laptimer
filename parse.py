@@ -481,6 +481,8 @@ if use_cgi:
     if FH:
         FH.close()
     if auto_timer:
+        if debug:
+            print ("Starting autotimer for default three hours.")
         # Starting timer for three hours
         p = subprocess.Popen([sys.executable, './autotimer.py'],
                              stdout=subprocess.PIPE,
