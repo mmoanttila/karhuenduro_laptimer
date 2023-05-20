@@ -19,23 +19,23 @@ def loadWebPage(myUrl):
 
 debug = True
 
-if (debug):
+if debug:
     stime = time.ctime()
-    print ("Skriptin suoritus alkoi: ", stime) 
+    print("Skriptin suoritus alkoi: ", stime)
 
 # epoch in seconds
 now = int(time.time())
 # now + 3h
 #stop = now+10800
 # use little lower time for testing
-stop = now+180
-url="http://www.karhuenduro.fi/cgi-bin/test.py"
+stop = now+600
+url = "http://www.karhuenduro.fi/readme.html&post=true"
 
-while ( now < stop ):
+while now < stop:
     time.sleep(60)
     loadWebPage(url)
     now = int(time.time())
 
-if (debug):
+if debug:
     stime = time.ctime()
-    print ("Skriptin suoritus paattyi: ", stime)
+    print("Skriptin suoritus paattyi: ", stime)
