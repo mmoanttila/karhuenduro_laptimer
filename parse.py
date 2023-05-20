@@ -15,6 +15,8 @@ import csv
 import re
 import os
 import sys
+import cgi
+import cgitb
 
 # Some settings for code
 startports = [1, 3]
@@ -31,6 +33,7 @@ static_numbers = "../web/ilmo/ilmot/static.csv"
 static_list = ""
 sarjakrossit_numbers = "../web/ilmo/ilmot/sarjakrossit.csv"
 kanada_numbers = "../web/ilmo/ilmot/kanada.csv"
+silent = False
 
 # End of settings
 
@@ -64,8 +67,20 @@ if (len(sys.argv) > 1 and '-d' in sys.argv):
 else:
     debug = False
 
+# Enable CGI-debugging output to html
+cgitb.enable()
+
+if debug:
+    print("CGI-tulostus kaytossa")
+# Lets prepare to read GET-variables
+form = cgi.FieldStorage()
+
+silent = form.getvalue('silent', False)
+if silent == "True" or silent == "true" or silent == "1":
+    silent = True
+
 # If called as CGI, we'll use html output
-if "HTTP_USER_AGENT" in os.environ:
+if "HTTP_USER_AGENT" in os.environ and not silent:
     use_cgi = True
     print("Content-type: text/html")
     print()
@@ -81,14 +96,6 @@ if "HTTP_USER_AGENT" in os.environ:
     print('  td.laptime { padding: 5px; }')
     print('</style>')
     print('<body><pre>')
-    import cgi, cgitb
-    # Enable CGI-debugging output to html
-    cgitb.enable()
-
-    if debug:
-        print("CGI-tulostus kaytossa")
-    # Lets prepare to read GET-variables
-    form = cgi.FieldStorage()
     # Let's use current date if not given on url
     current_time = datetime.now().strftime('%F %T')
     date = form.getvalue('date', '20190602')
@@ -133,7 +140,7 @@ if "HTTP_USER_AGENT" in os.environ:
 
     race_start = int(time.mktime(time.strptime(date + " " + form.getvalue('start', '10:00'), "%Y%m%d %H:%M"))) * 1000000
     race_end = int(time.mktime(time.strptime(date + " " + form.getvalue('end', '23:59'), "%Y%m%d %H:%M"))) * 1000000
-else:
+elif not silent:
     use_cgi = False
     # from cgi import parse_qs
     date = os.getenv('date', '20190602')
@@ -160,22 +167,23 @@ else:
 #    print("URLia ", url, " ei onnistuttu resolvoimaan!")
 #    print("Tai sitten osoite ei vaan vastaa!")
 
-logfile = log_dir + date + ".txt"
-if debug:
-    print("parsing logfile = " + log_dir + date + ".txt")
+if not silent:
+    logfile = log_dir + date + ".txt"
+    if debug:
+        print("parsing logfile = " + log_dir + date + ".txt")
 
-if os.path.exists(logfile):
-    contents = open(logfile, "r")
-else:
-    print("Couldn't open logfile: " + logfile)
-    try:
-        if debug:
-            print("Generating url = " + log_url + date + ".txt")
-        url = log_url + date + ".txt"
-        contents = urllib.request.urlopen(url)
-    except IOError:
-        print("Ei saatu avattu timestamppeja, lopetetaan")
-        sys.exit(99)
+    if os.path.exists(logfile):
+        contents = open(logfile, "r")
+    else:
+        print("Couldn't open logfile: " + logfile)
+        try:
+            if debug:
+                print("Generating url = " + log_url + date + ".txt")
+            url = log_url + date + ".txt"
+            contents = urllib.request.urlopen(url)
+        except IOError:
+            print("Ei saatu avattu timestamppeja, lopetetaan")
+            sys.exit(99)
 
 #if debug:
 #    print(contents.info())
@@ -484,7 +492,21 @@ if use_cgi:
         if debug:
             print ("Starting autotimer for default three hours.")
         # Starting timer for three hours
+        # <!-- tulokset.py&date=20230502&start=10:00&mode=laptime&laps=0&offset=0-->
+        # <!-- tulokset.py?date=2023-05-02&start=&end=&laps=&offset=0&mode=laptime&static_numbers=True&driverlist=sarjakrossit&static_output=True&output_file_name=tulokset-20230502.html&bad=True 
+        # <!--
+        # /cgi-bin/tulokset.py?date=2023-05-02&start=&end=&laps=&offset=0&mode=laptime&static_numbers=True&
+        # driverlist=sarjakrossit&static_output=True&output_file_name=tulokset-20230502.html&bad=True -->
+        params = "date=" + date + "&start=" +\
+                 time.strftime('%H:%M', time.localtime(race_start/1000000)) +\
+                 "&end=" + time.strftime('%H:%M', time.localtime(race_end/1000000)) +\
+                 "&mode=" + mode + "&laps=" + str(numlaps) + "&offset=" + str(offset) +\
+                 "&static_numbers=" + str(use_static_numbers) + "&driverlist=" +\
+                 static_list + "&static_output=" + str(static_output) +\
+                 "&output_file_name=" + output_file_name + "&bad=" + str(filter_tags)
+
         p = subprocess.Popen([sys.executable, './autotimer.py'],
+                             [sys.argv, params],
                              stdout=subprocess.PIPE,
                              stderr=subprocess.STDOUT)
 
