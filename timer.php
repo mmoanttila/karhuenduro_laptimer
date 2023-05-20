@@ -51,6 +51,8 @@ Tulos-sivun nimi:
 	<input type="text" name="output_file_name" value="tulokset-<?php echo date("Ymd") ?>.html"><br>
 Käytä pelkästään "omia" TAGeja (0000*):
 	<input type="checkbox" name="bad" value="True"><br>
+Käynnistä auto_timer:
+	<input type="checkbox" name="auto_timer" value="True"><br>
 Debug:
     <input type="checkbox" name="debug" value="True"><br>
 
