@@ -4,6 +4,7 @@ This is subprogram to update results-page for some time (defaulting to 3h) after
 """
 
 import time
+import sys
 import requests
 
 #import urllib2
@@ -28,8 +29,8 @@ now = int(time.time())
 # now + 3h
 #stop = now+10800
 # use little lower time for testing
-stop = now+600
-url = "http://www.karhuenduro.fi/readme.html&post=true"
+stop = now+180
+url = "http://www.karhuenduro.fi/cgi-bin/test.py" + sys.argv[1] + "silent=1"
 
 while now < stop:
     time.sleep(60)
