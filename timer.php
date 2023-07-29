@@ -6,17 +6,6 @@
 </head>
 
 <body>
-<script>
-function displayQuestion(answer) {
-  // document.getElementById(answer + 'Question').style.display = "block"; // yesQuestion
-  if (answer == "True") { // show additional input
-    document.getElementById('ajajalistat').style.display = "block";
-  } else {
-    document.getElementById('ajajalistat').style.display = "none";
-  }
-}
-</script>
-
 <H2>Laptimer</H2>
 <P>
 <form action="https://www.karhuenduro.fi/cgi-bin/tulokset.py">Lokin PVM:<br>
@@ -36,15 +25,7 @@ Laskennan tyyppi:<br>
         <option value="stage">Pätkäaika</option>
     </select><br>
 Käytä kiinteitä numeroita:
-	<input type="checkbox" name="static_numbers" id="static" value="True" onchange="displayQuestion(this.value)"/><br>
-<div id="ajajalistat" style="display:none;">
-Käytettävä ajajalista:<br>
-    <select name="driverlist">
-        <option selected value="static">Normikuskit</option>
-        <option value="sarjakrossit">Sarjakrossit</option>
-        <option value="kanada">Muu</option>
-    </select><br>
-</div>
+	<input type="checkbox" name="static_numbers" value="True"><br>
 Tee staattinen tulos-sivu:
 	<input type="checkbox" name="static_output" value="True"><br>
 Tulos-sivun nimi:
