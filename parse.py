@@ -442,6 +442,13 @@ if use_cgi:
             FH = False
     else:
         FH = False
+    try:
+        CSV = open(output_dir + csv_file_name, "w", encoding="utf-8")
+        CSV.write("Kuljettaja, Kierrokset, Kokonaisaika, Kierrosajat\n")
+        CSVwriter = csv.writer(CSV, delimiter=',')
+    except IOError:
+        CSV = False
+
     double_print(FH, "<!-- " + os.environ['REQUEST_URI'] + " -->\n")
     double_print(FH, "<h2>Tulokset " + date[6:8] + "." + date[4:6] + "." + date[0:4] + "</h2>")
     double_print(FH, "<h4>" + output_file_name + "</h4>")
@@ -461,7 +468,10 @@ if use_cgi:
             else:
                 double_print(FH, "    <td class=\"laptime\">" + print_laptime( laptimes[epc][col] )[:-3] + "</td>")
         double_print(FH, "  </tr>")
+        CSVwriter.writerow(print_tag(epc), str(mylaps), print_laptime(mytotal)[:-3], laptimes[epc])
     double_print(FH, "</table>")
+    CSV.close()
+    FH.close()
 else:
     print("Kierrosajat")
     my_number = 1
