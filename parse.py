@@ -114,10 +114,14 @@ if "HTTP_USER_AGENT" in os.environ:
         static_output = True
         # Only use output filename, when we need it
         defaultfilename = "tulokset-" + date + ".html"
+        defaultcsvname = "tulokset-" + date + ".csv"
         output_file_name = form.getvalue('output_file_name', defaultfilename)
-        # Lets make sure we have correct ending.
+        csv_file_name = form.getvalue('output_file_name', defaultcsvname)
+        # Lets make sure we have correct endings.
         if output_file_name[-5:] != ".html":
             output_file_name = output_file_name + ".html"
+        if csv_file_name[-4:] != ".csv":
+            csv_file_name = csv_file_name + ".csv"
 
     if debug:
         print("Kaytetty date: " + date)
@@ -474,6 +478,7 @@ else:
 if use_cgi:
     if static_output:
         print("<br>\n<hr>\n<a href=\"/tulokset/" + output_file_name + "\">Valmiit tulokset</a>")
+        print("<br>\n<hr>\n<a href=\"/tulokset/" + csv_file_name + "\">Tulokset CSV:nä</a>")
     double_print(FH, "<P><I>Last updated: " + current_time + "</I></P>")
     double_print(FH, "</html>")
     if FH:
