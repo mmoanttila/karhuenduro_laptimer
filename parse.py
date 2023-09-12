@@ -218,7 +218,7 @@ def read_tags(csvfile):
                 print("Luin tagin: ", row[2], "[", type(row[2]), "] = ", row[1], "[", type(row[1]), "]")
             if len(row) < 3: # Adding number to name if it exists on third column
                 continue
-            my_tags[row[2]] = row[1] + " | " + row[0]
+            my_tags[row[2]] = row[0] + ", " + row[1] 
         return my_tags
 
 def read_tags_cached(tagfile):
@@ -295,6 +295,18 @@ def double_print (FO, line):
     print(line)
     if FO:
         FO.write(line + "\n")
+
+def results_csv (file, drivers, results):
+    """ This will at some point give results as csv-file
+        columns are:
+        Pisteet, Sijoitus, Numero, Nimi, Kierrokset, Kokonaisaika Kierrosaika1 , ...
+    """
+    with open(file, mode='w') as results_file:
+        rw = csv.writer(results_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        # First header row
+        rw.writerow(['Pisteet', 'Sijoitus', 'Numero', 'Nimi', 'Kierrokset', 'Kokonaisaika', 'Kierrosajat'])
+        rw.writerow(['John Smith', 'Accounting', 'November'])
+        rw.writerow(['Erica Meyers', 'IT', 'March'])
 
 if debug:
     print("Yritän lukea tapahtuma tietoja tiedostosta: ", current_file, ".\n")
@@ -455,6 +467,7 @@ if use_cgi:
     double_print(FH, "<table border=\"1\">")
     my_number = 1
     for epc, mylaps, mytotal in results_sorted:
+        csvline = [pisteet[my_number-1], print_tag(epc), str(mylaps), print_laptime( mytotal )[:-3]]
         double_print(FH, "  <tr>")
         double_print(FH, "    <td colspan=\"3\">" + str(my_number) + ". " + print_tag(epc) + "</td>")
         double_print(FH, "    <td>" + str(mylaps) + " kierrosta</td>")
