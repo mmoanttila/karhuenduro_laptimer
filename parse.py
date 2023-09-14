@@ -168,7 +168,7 @@ if debug:
     print("parsing logfile = " + log_dir + date + ".txt")
 
 if os.path.exists(logfile):
-    contents = open(logfile, "r")
+    contents = open(logfile, "r", encoding="utf-8")
 else:
     print("Couldn't open logfile: " + logfile)
     try:
@@ -238,17 +238,17 @@ def read_tags_cached(tagfile):
             print("Tai sitten osoite ei vaan vastaa!")
             if os.path.exists(tagfile):
                 print("Kaytetaan paikallista kopioita: ", tagfile)
-                csvfile = open(tagfile, "r")
+                csvfile = open(tagfile, "r", encoding="utf-8")
         if debug:
             print("Updating local tags.csv cache")
-        with open(tagfile, 'wb') as csvcache:
+        with open(tagfile, 'wb', encoding="utf-8") as csvcache:
             csvwriter = csv.writer(csvcache, delimiter=',', quoting=csv.QUOTE_MINIMAL)
             csvreader = csv.reader(csvfile, delimiter=',')
             for row in csvreader:
                 csvwriter.writerow(row)
     if debug:
         print("Using local tag-csv-cache: " + tagfile)
-    csvfile = open(tagfile, "r")
+    csvfile = open(tagfile, "r", encoding="utf-8")
     my_tags = {}
     # with open( tagfile ) as csvfile:
     if debug:
@@ -264,7 +264,7 @@ def read_tags_cached(tagfile):
 
 def get_current(file):
     """Find current happenings name and date etc from current.json"""
-    current = json.load(open(file, "r"))
+    current = json.load(open(file, "r", encoding="utf-8"))
     return "../" + current["file"]
 
 def print_tag(tag):
@@ -302,7 +302,7 @@ def results_csv (myresults, laps, file="results.csv" ):
         columns are:
         Pisteet, Sijoitus, Numero, Nimi, Kierrokset, Kokonaisaika Kierrosaika1 , ...
     """
-    with open(file, mode='w') as results_file:
+    with open(file, mode='w', encoding="utf-8") as results_file:
         rw = csv.writer(results_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         # First header row
         rw.writerow(['Pisteet', 'Sijoitus', 'Numero', 'Nimi', 'Kierrokset', 'Kokonaisaika', 'Kierrosajat'])
@@ -450,7 +450,7 @@ if use_cgi:
     print("</pre>")
     if static_output:
         try:
-            FH = open(output_dir + output_file_name, "w")
+            FH = open(output_dir + output_file_name, "w", encoding="utf-8")
             FH.write("<html><head>\n<title>Tulokset " + date + "</title>\n<meta charset=\"UTF-8\">\n</head>\n<body>\n")
             FH.write("<!-- tulokset.py&date=" + date + "&start=" + time.strftime('%H:%M', time.localtime(race_start/1000000)) + "&mode=" + mode + "&laps=" + str(numlaps) + "&offset=" + str(offset) + "-->")
         except IOError:
@@ -469,7 +469,7 @@ if use_cgi:
     double_print(FH, "<h4>" + output_file_name + "</h4>")
     double_print(FH, "<table border=\"1\">")
     my_number = 1
-    results_csv(results_sorted, laptimes)
+    results_csv(results_sorted, laptimes, csv_file_name)
     for epc, mylaps, mytotal in results_sorted:
         double_print(FH, "  <tr>")
         double_print(FH, "    <td colspan=\"3\">" + str(my_number) + ". " + print_tag(epc) + "</td>")
