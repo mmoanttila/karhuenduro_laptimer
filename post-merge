@@ -1,0 +1,27 @@
+#!/bin/bash
+DST=/web
+CGI=/cgi-bin
+
+if [[ -r timer.php ]] ;then 
+    echo Lets publish timer.php
+    #sdiff -s timer.html ${DST}/timer/index.html
+    cp -v timer.php ${DST}/timer/index.php
+fi
+
+if [[ -r parse.py ]] ;then
+   echo Lets publish parse.py
+   #sdiff -s parse.py ${CGI}/tulokset.py
+   cp -v parse.py ${CGI}/tulokset.py
+fi
+
+if [[ -r debugger.py ]] ;then 
+    echo Lets publish debugger.py
+    #sdiff -s debugger.py ${CGI}/debugger.py
+    cp -v debugger.py ${CGI}/debugger.py
+fi
+
+# Let's save backup
+#mv -v $DST $DST.OLD
+#cp -v $SRC $DST
+#chmod 755 $DST
+
